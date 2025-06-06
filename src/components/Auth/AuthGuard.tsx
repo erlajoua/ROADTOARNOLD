@@ -2,6 +2,10 @@
 import React, { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigation } from "@/components/Layout/Navigation";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { Button } from "@/components/UI/Button";
+import { Input } from "@/components/UI/Input";
 
 interface AuthGuardProps {
 	children: React.ReactNode;
@@ -55,10 +59,12 @@ const LoginForm: React.FC = () => {
 	const [password, setPassword] = useState("");
 	const [isLogin, setIsLogin] = useState(true);
 	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState("");
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setLoading(true);
+		setError("");
 
 		try {
 			if (isLogin) {
@@ -66,8 +72,9 @@ const LoginForm: React.FC = () => {
 			} else {
 				await createUserWithEmailAndPassword(auth, email, password);
 			}
-		} catch (error) {
+		} catch (error: any) {
 			console.error("Erreur d'authentification:", error);
+			setError(error.message || "Erreur d'authentification");
 		} finally {
 			setLoading(false);
 		}
@@ -75,6 +82,11 @@ const LoginForm: React.FC = () => {
 
 	return (
 		<form onSubmit={handleSubmit} className="space-y-6">
+			{error && (
+				<div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+					{error}
+				</div>
+			)}
 			<Input
 				label="Email"
 				type="email"
