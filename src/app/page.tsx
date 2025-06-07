@@ -62,7 +62,7 @@ const beastQuotes = [
   { text: "MIND OVER MUSCLE", author: "WARRIOR" }
 ];
 
-const ElectricParticle = ({ delay = 0, duration = 2 }) => {
+const ElectricParticle = ({ delay = 0, duration = 2 }: { delay?: number; duration?: number }) => {
   return (
     <motion.div
       className="absolute w-1 h-1 bg-red-500 rounded-full"
@@ -86,7 +86,13 @@ const ElectricParticle = ({ delay = 0, duration = 2 }) => {
   );
 };
 
-const ElectricBolt = ({ startX, startY, endX, endY, delay = 0 }) => {
+const ElectricBolt = ({ startX, startY, endX, endY, delay = 0 }: {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  delay?: number;
+}) => {
   return (
     <motion.svg
       className="absolute pointer-events-none"

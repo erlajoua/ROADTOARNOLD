@@ -2,11 +2,23 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps {
   label?: string;
   error?: string;
   icon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  className?: string;
+  type?: string;
+  value?: string | number;
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+  min?: string;
+  max?: string;
+  step?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 export const Input: React.FC<InputProps> = ({ 
@@ -15,9 +27,17 @@ export const Input: React.FC<InputProps> = ({
   icon,
   rightIcon,
   className = '',
+  type = 'text',
+  value,
+  placeholder,
+  required = false,
+  disabled = false,
+  min,
+  max,
+  step,
+  onChange,
   onFocus,
-  onBlur,
-  ...props 
+  onBlur
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -91,13 +111,21 @@ export const Input: React.FC<InputProps> = ({
             ${error ? 'border-red-400 shadow-[0_0_10px_rgba(239,68,68,0.4)]' : ''}
             ${className}
           `}
+          type={type}
+          value={value}
+          placeholder={placeholder}
+          required={required}
+          disabled={disabled}
+          min={min}
+          max={max}
+          step={step}
+          onChange={onChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
           whileFocus={{
             scale: 1.02,
             transition: { duration: 0.2 }
           }}
-          {...props}
         />
 
         {/* RIGHT ICON */}
@@ -177,16 +205,32 @@ export const Input: React.FC<InputProps> = ({
 };
 
 // TEXTAREA BEAST MODE
-export const TextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+interface TextAreaProps {
   label?: string;
   error?: string;
-}> = ({ 
+  className?: string;
+  value?: string;
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+  rows?: number;
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onFocus?: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
+}
+
+export const TextArea: React.FC<TextAreaProps> = ({ 
   label, 
   error, 
   className = '',
+  value,
+  placeholder,
+  required = false,
+  disabled = false,
+  rows = 4,
+  onChange,
   onFocus,
-  onBlur,
-  ...props 
+  onBlur
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -244,13 +288,18 @@ export const TextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement
             ${error ? 'border-red-400 shadow-[0_0_10px_rgba(239,68,68,0.4)]' : ''}
             ${className}
           `}
+          value={value}
+          placeholder={placeholder}
+          required={required}
+          disabled={disabled}
+          rows={rows}
+          onChange={onChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
           whileFocus={{
             scale: 1.02,
             transition: { duration: 0.2 }
           }}
-          {...props}
         />
 
         {/* TOP RED NEON LINE */}

@@ -2,12 +2,17 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps {
+  children: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'danger';
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'beast';
   isLoading?: boolean;
   icon?: React.ReactNode;
   soundEffect?: boolean;
+  className?: string;
+  disabled?: boolean;
+  type?: 'button' | 'submit' | 'reset';
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const Button: React.FC<ButtonProps> = ({ 
@@ -20,7 +25,7 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   disabled,
   onClick,
-  ...props 
+  type = 'button'
 }) => {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -114,6 +119,7 @@ export const Button: React.FC<ButtonProps> = ({
       `}
       onClick={handleClick}
       disabled={isDisabled}
+      type={type}
       whileHover={!isDisabled ? {
         scale: 1.05,
         y: -8,
@@ -125,7 +131,6 @@ export const Button: React.FC<ButtonProps> = ({
         transition: { duration: 0.1 }
       } : {}}
       initial={{ scale: 1 }}
-      {...props}
     >
       {/* RED NEON TOP LINE */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-400 to-transparent" />
