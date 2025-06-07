@@ -1,13 +1,13 @@
 // src/app/motivation/page.tsx
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AuthGuard } from "@/components/Auth/AuthGuard";
 import { Card } from "@/components/UI/Card";
 import { Button } from "@/components/UI/Button";
 import { Input } from "@/components/UI/Input";
 import { useFirestore } from "@/hooks/useFirestore";
 import { MotivationEntry } from "@/types";
-import { Heart, Plus, Quote, Target, Flame, Star } from "lucide-react";
+import { Heart, Plus, Quote, Target, Flame } from "lucide-react";
 
 export default function MotivationPage() {
 	const {
@@ -17,9 +17,15 @@ export default function MotivationPage() {
 		update,
 		remove,
 	} = useFirestore<MotivationEntry>("motivationEntries");
+
+	// Debug: Log des données
+	React.useEffect(() => {
+		console.log("💪 Motivation entries:", entries);
+		console.log("⏳ Loading:", loading);
+	}, [entries, loading]);
 	
 	const [showForm, setShowForm] = useState(false);
-	const [selectedType, setSelectedType] = useState<MotivationEntry["type"] | "all">("all");
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [formData, setFormData] = useState({
 		type: "quote" as MotivationEntry["type"],
 		title: "",
@@ -28,18 +34,41 @@ export default function MotivationPage() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		await add({
-			type: formData.type,
-			title: formData.title,
-			content: formData.content,
-		});
-		
-		setFormData({
-			type: "quote",
-			title: "",
-			content: "",
-		});
-		setShowForm(false);
+		setIsSubmitting(true);
+
+		console.log("💪 Ajout d'entrée motivation:", formData);
+
+		try {
+			await add({
+				type: formData.type,
+				title: formData.title,
+				content: formData.content,
+			});
+
+			console.log("✅ Entrée motivation ajoutée avec succès");
+			
+			setFormData({
+				type: "quote",
+				title: "",
+				content: "",
+			});
+			setShowForm(false);
+		} catch (error) {
+			console.error("❌ Erreur lors de l'ajout:", error);
+			alert("❌ Erreur lors de l'ajout. Vérifiez la console.");
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	const handleRemove = async (entryId: string) => {
+		console.log("🗑️ Suppression entrée:", entryId);
+		try {
+			await remove(entryId);
+			console.log("✅ Entrée supprimée");
+		} catch (error) {
+			console.error("❌ Erreur lors de la suppression:", error);
+		}
 	};
 
 	const getTypeIcon = (type: MotivationEntry["type"]) => {
@@ -74,21 +103,16 @@ export default function MotivationPage() {
 
 	const getPlaceholder = (type: MotivationEntry["type"]) => {
 		switch(type) {
-			case "why": return "Écris ici pourquoi tu fais du powerlifting, ce qui te motive profondément...";
-			case "quote": return "Une citation qui t'inspire, de toi ou de quelqu'un d'autre...";
-			case "mantra": return "Un mantra que tu peux te répéter pendant l'entraînement...";
-			case "goal": return "Un objectif personnel qui te fait vibrer...";
+			case "why": return "Écris ici pourquoi tu fais du powerlifting...";
+			case "quote": return "Une citation qui t'inspire...";
+			case "mantra": return "Un mantra pour l'entraînement...";
+			case "goal": return "Un objectif personnel...";
 			default: return "Écris ton contenu motivant...";
 		}
 	};
 
-	// Filtrer les entrées
-	const filteredEntries = entries.filter(entry => 
-		selectedType === "all" || entry.type === selectedType
-	);
-
 	// Regrouper par type
-	const entriesByType = filteredEntries.reduce((acc, entry) => {
+	const entriesByType = entries.reduce((acc, entry) => {
 		if (!acc[entry.type]) {
 			acc[entry.type] = [];
 		}
@@ -99,111 +123,130 @@ export default function MotivationPage() {
 	// Ordre d'affichage des types
 	const typeOrder: MotivationEntry["type"][] = ["why", "goal", "mantra", "quote"];
 
+	const totalEntries = entries.length;
+
 	return (
 		<AuthGuard>
 			<div className="space-y-6">
+				{/* Header avec bouton bien visible */}
 				<div className="flex justify-between items-center">
 					<h1 className="text-3xl font-bold text-iron-900 flex items-center">
 						<Heart className="mr-3 text-power-600" />
-						Motivation
+						Ma Motivation
 					</h1>
-					<Button onClick={() => setShowForm(true)}>
-						<Plus className="w-4 h-4 mr-2" />
-						Nouvelle entrée
+					<Button 
+						onClick={() => setShowForm(true)}
+						className="bg-power-600 hover:bg-power-700 text-black px-6 py-3 text-lg font-semibold flex items-center justify-center gap-2 cursor-pointer"
+					>
+						<Plus className="w-5 h-5 mr-2 text-black" />
+						<span className="text-black">AJOUTER UNE MOTIVATION</span>
 					</Button>
 				</div>
 
-				{/* Citation du jour */}
-				<Card className="bg-gradient-to-r from-power-600 to-power-700 text-white">
-					<div className="text-center">
-						<Quote className="w-8 h-8 mx-auto mb-4 opacity-75" />
-						<blockquote className="text-xl md:text-2xl font-medium mb-4">
-							"Le champion se révèle quand tout le monde a abandonné"
-						</blockquote>
-						<p className="opacity-75">— Ta détermination intérieure</p>
-					</div>
-				</Card>
-
-				{/* Filtres */}
+				{/* Stats simples */}
 				<Card>
-					<div className="flex flex-wrap gap-2">
-						<button
-							onClick={() => setSelectedType("all")}
-							className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-								selectedType === "all"
-									? "bg-power-600 text-white"
-									: "bg-iron-100 text-iron-700 hover:bg-iron-200"
-							}`}
-						>
-							Tout voir
-						</button>
-						{typeOrder.map((type) => (
-							<button
-								key={type}
-								onClick={() => setSelectedType(type)}
-								className={`px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center space-x-1 ${
-									selectedType === type
-										? "bg-power-600 text-white"
-										: "bg-iron-100 text-iron-700 hover:bg-iron-200"
-								}`}
-							>
-								<span>{getTypeIcon(type)}</span>
-								<span>{getTypeLabel(type)}</span>
-							</button>
-						))}
+					<div className="text-center">
+						<h3 className="text-lg font-semibold text-iron-900 mb-2">Mes Motivations</h3>
+						<p className="text-4xl font-bold text-power-600">
+							{totalEntries}
+						</p>
+						<p className="text-iron-600">sources de motivation</p>
 					</div>
 				</Card>
 
-				{/* Formulaire d'ajout */}
+				{/* GROS bouton d'ajout si pas d'entrées */}
+				{totalEntries === 0 && !showForm && (
+					<Card className="text-center py-12">
+						<Heart className="w-16 h-16 text-power-600 mx-auto mb-4" />
+						<h2 className="text-2xl font-bold text-iron-900 mb-4">
+							Créez vos premières motivations !
+						</h2>
+						<Button 
+							onClick={() => setShowForm(true)}
+							className="bg-power-600 hover:bg-power-700 text-white px-8 py-4 text-xl font-bold"
+						>
+							<Plus className="w-6 h-6 mr-3 text-white" />
+							<span className="text-white">COMMENCER MAINTENANT</span>
+						</Button>
+					</Card>
+				)}
+
+				{/* Bouton flottant d'ajout */}
+				{!showForm && totalEntries > 0 && (
+					<div className="fixed bottom-6 right-6 z-50">
+						<Button 
+							onClick={() => setShowForm(true)}
+							className="bg-power-600 hover:bg-power-700 text-white w-16 h-16 rounded-full shadow-lg"
+						>
+							<Plus className="w-8 h-8 text-white" />
+						</Button>
+					</div>
+				)}
+
+				{/* Formulaire d'ajout simplifié */}
 				{showForm && (
-					<Card title="Nouvelle entrée motivante">
+					<Card title="🎯 Ajouter une Motivation">
 						<form onSubmit={handleSubmit} className="space-y-4">
-							<div>
-								<label className="block text-sm font-medium text-iron-700 mb-2">
-									Type
-								</label>
-								<select
-									value={formData.type}
-									onChange={(e) => setFormData({ ...formData, type: e.target.value as MotivationEntry["type"] })}
-									className="w-full px-3 py-2 border border-iron-300 rounded-md"
-								>
-									<option value="quote">Citation</option>
-									<option value="why">Pourquoi</option>
-									<option value="mantra">Mantra</option>
-									<option value="goal">Objectif</option>
-								</select>
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div>
+									<label className="block text-sm font-medium text-iron-700 mb-2">
+										🏷️ Type
+									</label>
+									<select
+										value={formData.type}
+										onChange={(e) => setFormData({ ...formData, type: e.target.value as MotivationEntry["type"] })}
+										className="w-full px-3 py-2 border border-iron-300 rounded-md focus:ring-power-500 focus:border-power-500"
+										required
+									>
+										<option value="quote">💬 Citation</option>
+										<option value="why">❤️ Pourquoi</option>
+										<option value="mantra">🔥 Mantra</option>
+										<option value="goal">🎯 Objectif</option>
+									</select>
+								</div>
+								
+								<Input
+									label="📝 Titre"
+									value={formData.title}
+									onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+									placeholder="Ex: Ma motivation principale"
+									required
+								/>
 							</div>
 							
-							<Input
-								label="Titre"
-								value={formData.title}
-								onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-								placeholder="Ex: Ma motivation principale"
-								required
-							/>
-							
 							<div>
 								<label className="block text-sm font-medium text-iron-700 mb-2">
-									Contenu
+									💭 Contenu
 								</label>
 								<textarea
 									value={formData.content}
 									onChange={(e) => setFormData({ ...formData, content: e.target.value })}
 									rows={4}
-									className="w-full px-3 py-2 border border-iron-300 rounded-md"
+									className="w-full px-3 py-2 border border-iron-300 rounded-md focus:ring-power-500 focus:border-power-500"
 									placeholder={getPlaceholder(formData.type)}
 									required
 								/>
 							</div>
 							
-							<div className="flex space-x-2">
-								<Button type="submit">Ajouter</Button>
-								<Button
-									type="button"
-									variant="secondary"
+							<div className="flex space-x-2 pt-4">
+								<Button 
+									type="submit" 
+									className="flex-1"
+									disabled={!formData.title || !formData.content || isSubmitting}
+								>
+									{isSubmitting 
+										? '⏳ Ajout en cours...' 
+										: !formData.title || !formData.content 
+											? '⏳ Remplir les champs' 
+											: '✅ Ajouter la Motivation'
+									}
+								</Button>
+								<Button 
+									type="button" 
+									variant="secondary" 
 									onClick={() => setShowForm(false)}
 								>
-									Annuler
+									❌ Annuler
 								</Button>
 							</div>
 						</form>
@@ -213,17 +256,7 @@ export default function MotivationPage() {
 				{/* Entrées par type */}
 				{loading ? (
 					<div className="text-center py-8">Chargement...</div>
-				) : filteredEntries.length === 0 ? (
-					<Card className="text-center py-8">
-						<Heart className="w-12 h-12 text-iron-400 mx-auto mb-4" />
-						<p className="text-iron-600">
-							{selectedType !== "all" 
-								? `Aucune entrée de type "${getTypeLabel(selectedType)}"`
-								: "Aucune entrée motivante pour le moment"
-							}
-						</p>
-					</Card>
-				) : (
+				) : totalEntries === 0 ? null : (
 					typeOrder.map((type) => {
 						const typeEntries = entriesByType[type];
 						if (!typeEntries || typeEntries.length === 0) return null;
@@ -237,7 +270,7 @@ export default function MotivationPage() {
 								
 								<div className="grid gap-4 mb-8">
 									{typeEntries
-										.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+										.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
 										.map((entry) => (
 										<Card 
 											key={entry.id} 
@@ -252,7 +285,7 @@ export default function MotivationPage() {
 												<Button
 													size="sm"
 													variant="danger"
-													onClick={() => remove(entry.id)}
+													onClick={() => handleRemove(entry.id)}
 												>
 													Supprimer
 												</Button>
@@ -267,57 +300,12 @@ export default function MotivationPage() {
 													"{entry.content}"
 												</p>
 											</div>
-											
-											<p className="text-xs text-iron-500">
-												Créé le {new Date(entry.createdAt).toLocaleDateString("fr-FR")}
-											</p>
 										</Card>
 									))}
 								</div>
 							</div>
 						);
 					})
-				)}
-
-				{/* Inspiration par défaut */}
-				{entries.length === 0 && (
-					<div className="grid md:grid-cols-2 gap-6">
-						<Card title="🔥 Mantras Puissants" className="border-l-4 border-orange-400">
-							<div className="space-y-3 text-sm">
-								<p className="italic">"Un rep de plus, un pas de plus vers la grandeur"</p>
-								<p className="italic">"Je ne m'arrête pas quand je suis fatigué, je m'arrête quand j'ai fini"</p>
-								<p className="italic">"Chaque entraînement me rapproche de mon record"</p>
-								<p className="italic">"La douleur est temporaire, la fierté est éternelle"</p>
-							</div>
-						</Card>
-						
-						<Card title="❤️ Rappelle-toi Pourquoi" className="border-l-4 border-red-400">
-							<div className="space-y-3 text-sm text-iron-700">
-								<p>• Pour prouver de quoi tu es capable</p>
-								<p>• Pour inspirer les autres</p>
-								<p>• Pour repousser tes limites</p>
-								<p>• Pour la satisfaction du dépassement</p>
-								<p>• Pour écrire ton nom dans l'histoire</p>
-							</div>
-						</Card>
-						
-						<Card title="🎯 Objectifs Inspirants" className="border-l-4 border-green-400">
-							<div className="space-y-3 text-sm text-iron-700">
-								<p>• Battre le record junior bench press</p>
-								<p>• Atteindre les minimas squat et deadlift</p>
-								<p>• Devenir une référence de ta catégorie</p>
-								<p>• Inspirer la prochaine génération</p>
-							</div>
-						</Card>
-						
-						<Card title="💬 Citations Légendaires" className="border-l-4 border-blue-400">
-							<div className="space-y-3 text-sm">
-								<p className="italic">"Champions aren't made in the gyms. Champions are made from something deep inside them - a desire, a dream, a vision." - Muhammad Ali</p>
-								<p className="italic">"The iron never lies to you." - Henry Rollins</p>
-								<p className="italic">"Strength does not come from physical capacity. It comes from an indomitable will." - Mahatma Gandhi</p>
-							</div>
-						</Card>
-					</div>
 				)}
 			</div>
 		</AuthGuard>

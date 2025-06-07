@@ -1,302 +1,252 @@
 // src/app/preparation/quotidien/page.tsx
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AuthGuard } from "@/components/Auth/AuthGuard";
 import { Card } from "@/components/UI/Card";
 import { Button } from "@/components/UI/Button";
 import { Input } from "@/components/UI/Input";
-import { useFirestore } from "@/hooks/useFirestore";
-import { DailyTracking } from "@/types";
-import { Moon, Droplets, Battery, Smile, Plus, Calendar } from "lucide-react";
+import { CheckSquare, Plus, X } from "lucide-react";
+
+interface DailyTask {
+  id: string;
+  text: string;
+  category: 'morning' | 'training' | 'evening' | 'general';
+}
 
 export default function QuotidienPage() {
-	const {
-		data: trackings,
-		loading,
-		add,
-		update,
-		remove,
-	} = useFirestore<DailyTracking>("dailyTracking");
-	
-	const [showForm, setShowForm] = useState(false);
-	const [formData, setFormData] = useState({
-		date: new Date().toISOString().split('T')[0],
-		sleepHours: "",
-		sleepQuality: 3 as 1 | 2 | 3 | 4 | 5,
-		hydrationLiters: "",
-		energy: 3 as 1 | 2 | 3 | 4 | 5,
-		mood: 3 as 1 | 2 | 3 | 4 | 5,
-		notes: "",
-	});
+  // Tâches quotidiennes locales
+  const [dailyTasks, setDailyTasks] = useState<DailyTask[]>([
+    { id: '1', text: 'Boire 3L d\'eau', category: 'general' },
+    { id: '2', text: 'Faire ma visualisation mentale', category: 'morning' },
+    { id: '3', text: 'Échauffement complet', category: 'training' },
+    { id: '4', text: 'Étirements post-training', category: 'training' },
+    { id: '5', text: 'Lecture technique 15min', category: 'evening' },
+  ]);
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		await add({
-			date: new Date(formData.date),
-			sleep: {
-				hours: Number(formData.sleepHours),
-				quality: formData.sleepQuality,
-			},
-			hydration: {
-				liters: Number(formData.hydrationLiters),
-			},
-			energy: formData.energy,
-			mood: formData.mood,
-			notes: formData.notes,
-		});
-		
-		setFormData({
-			date: new Date().toISOString().split('T')[0],
-			sleepHours: "",
-			sleepQuality: 3,
-			hydrationLiters: "",
-			energy: 3,
-			mood: 3,
-			notes: "",
-		});
-		setShowForm(false);
-	};
+  const [showForm, setShowForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    text: '',
+    category: 'general' as DailyTask['category']
+  });
 
-	const getStarRating = (value: number, onChange: (value: 1 | 2 | 3 | 4 | 5) => void) => {
-		return (
-			<div className="flex space-x-1">
-				{[1, 2, 3, 4, 5].map((star) => (
-					<button
-						key={star}
-						type="button"
-						onClick={() => onChange(star as 1 | 2 | 3 | 4 | 5)}
-						className={`text-2xl ${
-							star <= value ? "text-yellow-400" : "text-gray-300"
-						}`}
-					>
-						⭐
-					</button>
-				))}
-			</div>
-		);
-	};
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-	const getDisplayStars = (value: number) => {
-		return "⭐".repeat(value) + "☆".repeat(5 - value);
-	};
+    console.log("📋 Ajout de tâche quotidienne:", formData);
 
-	const getMoodEmoji = (mood: number) => {
-		const emojis = ["😢", "😞", "😐", "😊", "😄"];
-		return emojis[mood - 1];
-	};
+    try {
+      const newTask: DailyTask = {
+        id: Date.now().toString(),
+        text: formData.text,
+        category: formData.category
+      };
 
-	const getEnergyColor = (energy: number) => {
-		const colors = ["text-red-500", "text-orange-500", "text-yellow-500", "text-green-500", "text-green-600"];
-		return colors[energy - 1];
-	};
+      setDailyTasks([...dailyTasks, newTask]);
+      console.log("✅ Tâche quotidienne ajoutée avec succès");
 
-	// Trier par date décroissante
-	const sortedTrackings = [...trackings].sort((a, b) => 
-		new Date(b.date).getTime() - new Date(a.date).getTime()
-	);
+      setFormData({
+        text: '',
+        category: 'general'
+      });
+      setShowForm(false);
+    } catch (error) {
+      console.error("❌ Erreur lors de l'ajout:", error);
+      alert("❌ Erreur lors de l'ajout. Vérifiez la console.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-	return (
-		<AuthGuard>
-			<div className="space-y-6">
-				<div className="flex justify-between items-center">
-					<h1 className="text-3xl font-bold text-iron-900 flex items-center">
-						<Calendar className="mr-3 text-power-600" />
-						Suivi Quotidien
-					</h1>
-					<Button onClick={() => setShowForm(true)}>
-						<Plus className="w-4 h-4 mr-2" />
-						Nouvelle entrée
-					</Button>
-				</div>
+  const removeTask = (id: string) => {
+    setDailyTasks(tasks => tasks.filter(task => task.id !== id));
+  };
 
-				{/* Formulaire d'ajout */}
-				{showForm && (
-					<Card title="Nouvelle entrée quotidienne">
-						<form onSubmit={handleSubmit} className="space-y-4">
-							<Input
-								label="Date"
-								type="date"
-								value={formData.date}
-								onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-								required
-							/>
-							
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<Input
-									label="Heures de sommeil"
-									type="number"
-									step="0.5"
-									value={formData.sleepHours}
-									onChange={(e) => setFormData({ ...formData, sleepHours: e.target.value })}
-									required
-								/>
-								
-								<div>
-									<label className="block text-sm font-medium text-iron-700 mb-2">
-										Qualité du sommeil
-									</label>
-									{getStarRating(formData.sleepQuality, (value) =>
-										setFormData({ ...formData, sleepQuality: value })
-									)}
-								</div>
-							</div>
-							
-							<Input
-								label="Hydratation (litres)"
-								type="number"
-								step="0.1"
-								value={formData.hydrationLiters}
-								onChange={(e) => setFormData({ ...formData, hydrationLiters: e.target.value })}
-								required
-							/>
-							
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<div>
-									<label className="block text-sm font-medium text-iron-700 mb-2">
-										Niveau d'énergie
-									</label>
-									{getStarRating(formData.energy, (value) =>
-										setFormData({ ...formData, energy: value })
-									)}
-								</div>
-								
-								<div>
-									<label className="block text-sm font-medium text-iron-700 mb-2">
-										Humeur
-									</label>
-									{getStarRating(formData.mood, (value) =>
-										setFormData({ ...formData, mood: value })
-									)}
-								</div>
-							</div>
-							
-							<Input
-								label="Notes (optionnel)"
-								value={formData.notes}
-								onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-								placeholder="Comment tu te sens, remarques particulières..."
-							/>
-							
-							<div className="flex space-x-2">
-								<Button type="submit">Ajouter</Button>
-								<Button
-									type="button"
-									variant="secondary"
-									onClick={() => setShowForm(false)}
-								>
-									Annuler
-								</Button>
-							</div>
-						</form>
-					</Card>
-				)}
+  const getCategoryIcon = (category: DailyTask['category']) => {
+    switch(category) {
+      case 'morning': return '🌅';
+      case 'training': return '💪';
+      case 'evening': return '🌙';
+      case 'general': return '📝';
+      default: return '📝';
+    }
+  };
 
-				{/* Statistiques rapides */}
-				{trackings.length > 0 && (
-					<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-						<Card className="text-center">
-							<Moon className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-							<p className="text-sm text-iron-600">Sommeil moyen</p>
-							<p className="text-xl font-bold text-iron-900">
-								{(trackings.reduce((acc, t) => acc + t.sleep.hours, 0) / trackings.length).toFixed(1)}h
-							</p>
-						</Card>
-						<Card className="text-center">
-							<Droplets className="h-6 w-6 text-blue-500 mx-auto mb-2" />
-							<p className="text-sm text-iron-600">Hydratation moy.</p>
-							<p className="text-xl font-bold text-iron-900">
-								{(trackings.reduce((acc, t) => acc + t.hydration.liters, 0) / trackings.length).toFixed(1)}L
-							</p>
-						</Card>
-						<Card className="text-center">
-							<Battery className="h-6 w-6 text-green-600 mx-auto mb-2" />
-							<p className="text-sm text-iron-600">Énergie moy.</p>
-							<p className="text-xl font-bold text-iron-900">
-								{(trackings.reduce((acc, t) => acc + t.energy, 0) / trackings.length).toFixed(1)}/5
-							</p>
-						</Card>
-						<Card className="text-center">
-							<Smile className="h-6 w-6 text-yellow-600 mx-auto mb-2" />
-							<p className="text-sm text-iron-600">Humeur moy.</p>
-							<p className="text-xl font-bold text-iron-900">
-								{(trackings.reduce((acc, t) => acc + t.mood, 0) / trackings.length).toFixed(1)}/5
-							</p>
-						</Card>
-					</div>
-				)}
+  const getCategoryColor = (category: DailyTask['category']) => {
+    switch(category) {
+      case 'morning': return 'bg-yellow-100 text-yellow-800';
+      case 'training': return 'bg-red-100 text-red-800';
+      case 'evening': return 'bg-blue-100 text-blue-800';
+      case 'general': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
-				{/* Historique */}
-				<div className="space-y-4">
-					<h2 className="text-xl font-semibold text-iron-900">Historique</h2>
-					{loading ? (
-						<div className="text-center py-8">Chargement...</div>
-					) : trackings.length === 0 ? (
-						<Card className="text-center py-8">
-							<Calendar className="w-12 h-12 text-iron-400 mx-auto mb-4" />
-							<p className="text-iron-600">Aucune entrée pour le moment</p>
-						</Card>
-					) : (
-						sortedTrackings.map((tracking) => (
-							<Card key={tracking.id}>
-								<div className="flex items-center justify-between mb-4">
-									<h3 className="text-lg font-semibold">
-										{new Date(tracking.date).toLocaleDateString("fr-FR", {
-											weekday: "long",
-											year: "numeric",
-											month: "long",
-											day: "numeric",
-										})}
-									</h3>
-									<Button
-										size="sm"
-										variant="danger"
-										onClick={() => remove(tracking.id)}
-									>
-										Supprimer
-									</Button>
-								</div>
-								
-								<div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-									<div className="flex items-center space-x-2">
-										<Moon className="h-4 w-4 text-blue-600" />
-										<div>
-											<p className="font-medium">{tracking.sleep.hours}h de sommeil</p>
-											<p className="text-iron-600">{getDisplayStars(tracking.sleep.quality)}</p>
-										</div>
-									</div>
-									
-									<div className="flex items-center space-x-2">
-										<Droplets className="h-4 w-4 text-blue-500" />
-										<div>
-											<p className="font-medium">{tracking.hydration.liters}L d'eau</p>
-										</div>
-									</div>
-									
-									<div className="flex items-center space-x-2">
-										<Battery className={`h-4 w-4 ${getEnergyColor(tracking.energy)}`} />
-										<div>
-											<p className="font-medium">Énergie {tracking.energy}/5</p>
-										</div>
-									</div>
-									
-									<div className="flex items-center space-x-2">
-										<span className="text-lg">{getMoodEmoji(tracking.mood)}</span>
-										<div>
-											<p className="font-medium">Humeur {tracking.mood}/5</p>
-										</div>
-									</div>
-								</div>
-								
-								{tracking.notes && (
-									<div className="mt-4 pt-4 border-t border-iron-200">
-										<p className="text-iron-700 italic">"{tracking.notes}"</p>
-									</div>
-								)}
-							</Card>
-						))
-					)}
-				</div>
-			</div>
-		</AuthGuard>
-	);
+  const getCategoryLabel = (category: DailyTask['category']) => {
+    switch(category) {
+      case 'morning': return 'Matin';
+      case 'training': return 'Entraînement';
+      case 'evening': return 'Soir';
+      case 'general': return 'Général';
+      default: return 'Autre';
+    }
+  };
+
+  // Stats simples
+  const totalTasks = dailyTasks.length;
+
+  return (
+    <AuthGuard>
+      <div className="space-y-6">
+        {/* Header avec bouton bien visible */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-iron-900 flex items-center">
+            <CheckSquare className="mr-3 text-power-600" />
+            Ma TodoList Quotidienne
+          </h1>
+          <Button 
+            onClick={() => setShowForm(true)}
+            className="bg-power-600 hover:bg-power-700 text-black px-6 py-3 text-lg font-semibold flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-5 h-5 mr-2 text-black" />
+            <span className="text-black">AJOUTER UNE TÂCHE</span>
+          </Button>
+        </div>
+
+        {/* Stats simples */}
+        <Card>
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-iron-900 mb-2">Mes Tâches</h3>
+            <p className="text-4xl font-bold text-power-600">
+              {totalTasks}
+            </p>
+            <p className="text-iron-600">tâches planifiées</p>
+          </div>
+        </Card>
+
+        {/* GROS bouton d'ajout si pas de tâches */}
+        {totalTasks === 0 && !showForm && (
+          <Card className="text-center py-12">
+            <CheckSquare className="w-16 h-16 text-power-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-iron-900 mb-4">
+              Créez vos premières tâches quotidiennes !
+            </h2>
+            <Button 
+              onClick={() => setShowForm(true)}
+              className="bg-power-600 hover:bg-power-700 text-black px-8 py-4 text-xl font-bold flex items-center justify-center gap-3 mx-auto"
+            >
+              <Plus className="w-6 h-6 text-black" />
+              <span className="text-black">COMMENCER MAINTENANT</span>
+            </Button>
+          </Card>
+        )}
+
+        {/* Bouton flottant d'ajout */}
+        {!showForm && totalTasks > 0 && (
+          <div className="fixed bottom-6 right-6 z-50">
+            <Button 
+              onClick={() => setShowForm(true)}
+              className="bg-power-600 hover:bg-power-700 text-black w-16 h-16 rounded-full shadow-lg flex items-center justify-center"
+            >
+              <Plus className="w-8 h-8 text-black" />
+            </Button>
+          </div>
+        )}
+
+        {/* Formulaire d'ajout simplifié */}
+        {showForm && (
+          <Card title="📋 Ajouter une Tâche Quotidienne">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  label="📝 Tâche à faire"
+                  value={formData.text}
+                  onChange={(e) => setFormData({ ...formData, text: e.target.value })}
+                  placeholder="Ex: Faire 20 min de visualisation"
+                  required
+                />
+                
+                <div>
+                  <label className="block text-sm font-medium text-iron-700 mb-2">
+                    🏷️ Catégorie
+                  </label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value as DailyTask['category'] })}
+                    className="w-full px-3 py-2 border border-iron-300 rounded-md focus:ring-power-500 focus:border-power-500"
+                    required
+                  >
+                    <option value="general">📝 Général</option>
+                    <option value="morning">🌅 Matin</option>
+                    <option value="training">💪 Entraînement</option>
+                    <option value="evening">🌙 Soir</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="flex space-x-2 pt-4">
+                <Button 
+                  type="submit" 
+                  className="flex-1"
+                  disabled={!formData.text || isSubmitting}
+                >
+                  {isSubmitting 
+                    ? '⏳ Ajout en cours...' 
+                    : !formData.text 
+                      ? '⏳ Remplir le champ' 
+                      : '✅ Ajouter la Tâche'
+                  }
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="secondary" 
+                  onClick={() => setShowForm(false)}
+                >
+                  ❌ Annuler
+                </Button>
+              </div>
+            </form>
+          </Card>
+        )}
+
+        {/* Liste des tâches */}
+        {totalTasks > 0 && (
+          <div>
+            <h2 className="text-xl font-semibold text-iron-900 mb-4">
+              Mes Tâches du Jour ({totalTasks})
+            </h2>
+            
+            <div className="grid gap-3">
+              {dailyTasks.map((task) => (
+                <Card key={task.id}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-iron-900 font-medium">
+                            {task.text}
+                          </span>
+                          <span className={`px-2 py-1 rounded-full text-xs ${getCategoryColor(task.category)}`}>
+                            {getCategoryIcon(task.category)} {getCategoryLabel(task.category)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={() => removeTask(task.id)}
+                      className="text-red-500 hover:text-red-700 p-1 ml-2"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </AuthGuard>
+  );
 }
