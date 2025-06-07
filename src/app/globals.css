@@ -1,7 +1,395 @@
 @import "tailwindcss";
 
+/* BEAST MODE FONT IMPORTS */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue:wght@400&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+/* BEAST MODE GLOBAL FOUNDATION */
 @layer base {
-  body {
-    @apply bg-gray-50 min-h-screen;
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 min-h-screen text-gray-100;
+    font-family: 'Inter', sans-serif;
+    background-attachment: fixed;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* BEAST MODE BACKGROUND PATTERN */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 20% 20%, rgba(255, 0, 64, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(220, 38, 38, 0.1) 0%, transparent 50%),
+      linear-gradient(rgba(255, 0, 64, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 0, 64, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 50px 50px, 50px 50px;
+    pointer-events: none;
+    z-index: -1;
+    animation: electric-pulse 8s ease-in-out infinite;
+  }
+
+  /* BEAST MODE SCROLLBAR */
+  ::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-900;
+    border-radius: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #dc2626, #991b1b);
+    border-radius: 6px;
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.3);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ef4444, #dc2626);
+    box-shadow: 0 0 12px rgba(220, 38, 38, 0.5);
+  }
+
+  /* FIREFOX SCROLLBAR */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #dc2626 #1f2937;
+  }
+}
+
+/* BEAST MODE TYPOGRAPHY */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Bebas Neue', sans-serif;
+    @apply font-black tracking-wide;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  h1 {
+    @apply text-4xl md:text-6xl lg:text-7xl;
+    background: linear-gradient(45deg, #dc2626, #ef4444, #dc2626);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: text-rage 4s ease-in-out infinite;
+  }
+
+  h2 {
+    @apply text-2xl md:text-4xl lg:text-5xl text-red-500;
+    text-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+    animation: text-pulse 3s ease-in-out infinite;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl lg:text-3xl text-red-400;
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+  }
+
+  strong {
+    @apply text-red-400 font-black;
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+  }
+
+  a {
+    @apply transition-all duration-300;
+    position: relative;
+  }
+
+  a:hover {
+    text-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+    transform: translateY(-1px);
+  }
+}
+
+/* BEAST MODE COMPONENTS */
+@layer components {
+  /* BEAST BUTTON */
+  .btn-beast {
+    @apply relative overflow-hidden;
+    background: linear-gradient(45deg, #dc2626, #ef4444, #dc2626);
+    background-size: 200% 200%;
+    @apply text-white font-black py-3 px-6 rounded-lg border-2 border-red-500;
+    border-color: rgba(239, 68, 68, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: all 0.3s ease-out;
+    box-shadow: 
+      0 0 20px rgba(220, 38, 38, 0.3),
+      0 6px 15px rgba(0, 0, 0, 0.2);
+    animation: gradient-shift 3s ease infinite;
+  }
+
+  .btn-beast::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-beast:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 
+      0 0 30px rgba(220, 38, 38, 0.5),
+      0 10px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-beast:hover::after {
+    left: 100%;
+  }
+
+  .btn-beast:active {
+    transform: translateY(-1px) scale(1.01);
+  }
+
+  /* BEAST CARD */
+  .card-beast {
+    @apply relative overflow-hidden;
+    background: linear-gradient(135deg, 
+      rgba(31, 41, 55, 0.95) 0%, 
+      rgba(55, 65, 81, 0.90) 50%, 
+      rgba(31, 41, 55, 0.95) 100%
+    );
+    @apply border-2 rounded-xl p-6;
+    border-color: rgba(220, 38, 38, 0.2);
+    backdrop-filter: blur(12px);
+    box-shadow: 
+      0 12px 32px rgba(0, 0, 0, 0.6),
+      0 0 15px rgba(220, 38, 38, 0.15);
+    transition: all 0.3s ease-out;
+  }
+
+  .card-beast::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #dc2626, transparent);
+  }
+
+  .card-beast::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #ef4444, transparent);
+  }
+
+  .card-beast:hover {
+    transform: translateY(-5px) scale(1.01);
+    border-color: rgba(239, 68, 68, 0.4);
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.7),
+      0 0 25px rgba(220, 38, 38, 0.3);
+  }
+
+  /* BEAST INPUT */
+  .input-beast {
+    background: linear-gradient(135deg, rgba(31, 41, 55, 0.9), rgba(55, 65, 81, 0.8));
+    @apply border-2 text-gray-100 px-4 py-3 rounded-lg;
+    border-color: rgba(220, 38, 38, 0.2);
+    transition: all 0.3s ease-out;
+    backdrop-filter: blur(8px);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .input-beast:focus {
+    outline: none;
+    border-color: #ef4444;
+    box-shadow: 
+      0 0 0 3px rgba(239, 68, 68, 0.15),
+      0 0 15px rgba(220, 38, 38, 0.2);
+    background: linear-gradient(135deg, rgba(55, 65, 81, 0.95), rgba(75, 85, 99, 0.9));
+  }
+
+  .input-beast::placeholder {
+    @apply text-gray-400;
+  }
+
+  /* BEAST ANIMATIONS */
+  .animate-beast-pulse {
+    animation: beast-pulse 2s ease-in-out infinite;
+  }
+
+  .animate-electric-surge {
+    animation: electric-surge 1s ease-out;
+  }
+
+  /* BEAST GRADIENTS */
+  .bg-beast-rage {
+    background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 25%, #ef4444 50%, #dc2626 75%, #7f1d1d 100%);
+    background-size: 300% 300%;
+    animation: gradient-shift 4s ease infinite;
+  }
+
+  .bg-beast-dark {
+    background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%);
+  }
+
+  /* BEAST TEXT EFFECTS */
+  .text-beast-glow {
+    text-shadow: 
+      0 0 8px currentColor,
+      0 0 16px currentColor,
+      0 0 24px currentColor;
+    animation: text-glow-pulse 2s ease-in-out infinite alternate;
+  }
+
+  .text-beast-rage {
+    background: linear-gradient(45deg, #dc2626, #ef4444, #dc2626);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 3s ease infinite;
+  }
+
+  /* BEAST HOVER EFFECTS */
+  .hover-beast {
+    transition: all 0.3s ease-out;
+  }
+
+  .hover-beast:hover {
+    transform: translateY(-3px) scale(1.02);
+    filter: brightness(1.1);
+    text-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+  }
+}
+
+/* BEAST MODE KEYFRAMES */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes electric-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes text-rage {
+  0%, 100% { 
+    background-position: 0% 50%;
+  }
+  50% { 
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes text-pulse {
+  0%, 100% { 
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+    transform: scale(1);
+  }
+  50% { 
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.8);
+    transform: scale(1.01);
+  }
+}
+
+@keyframes beast-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.2);
+  }
+  50% { 
+    transform: scale(1.03);
+    box-shadow: 0 0 30px rgba(220, 38, 38, 0.4);
+  }
+}
+
+@keyframes electric-surge {
+  0% { 
+    transform: scale(0.98);
+    filter: brightness(0.9);
+  }
+  50% { 
+    transform: scale(1.05);
+    filter: brightness(1.2);
+  }
+  100% { 
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes text-glow-pulse {
+  0% { 
+    text-shadow: 0 0 8px currentColor, 0 0 16px currentColor;
+  }
+  100% { 
+    text-shadow: 0 0 16px currentColor, 0 0 32px currentColor, 0 0 48px currentColor;
+  }
+}
+
+/* BEAST MODE UTILITIES */
+@layer utilities {
+  .shadow-beast {
+    box-shadow: 
+      0 20px 40px rgba(220, 38, 38, 0.3),
+      0 12px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .backdrop-beast {
+    backdrop-filter: blur(12px) saturate(150%);
+    background: rgba(31, 41, 55, 0.8);
+  }
+
+  .glow-beast {
+    filter: drop-shadow(0 0 15px rgba(220, 38, 38, 0.6));
+  }
+}
+
+/* BEAST MODE RESPONSIVE */
+@media (max-width: 768px) {
+  .card-beast {
+    @apply p-4;
+  }
+  
+  .btn-beast {
+    @apply py-2 px-4 text-sm;
+  }
+  
+  h1 {
+    @apply text-2xl;
+  }
+
+  body::before {
+    background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+  }
+}
+
+/* BEAST MODE SELECTION */
+::selection {
+  background: rgba(220, 38, 38, 0.3);
+  color: white;
+}
+
+::-moz-selection {
+  background: rgba(220, 38, 38, 0.3);
+  color: white;
 }
