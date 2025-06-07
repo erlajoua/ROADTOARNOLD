@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BeastAudio } from '@/components/Audio/BeastAudio';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -52,12 +51,27 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
   const [progress, setProgress] = useState(0);
   const [showImages, setShowImages] = useState(false);
   const [loadingComplete, setLoadingComplete] = useState(false);
+  const [showInitialMessage, setShowInitialMessage] = useState(true);
 
+  // LANCER LA PUTAIN DE MUSIQUE DIRECT
   useEffect(() => {
-    // Start image sequence after initial animation
+    const audio = new Audio('/phonk-beast.mp3');
+    audio.volume = 0.3;
+    audio.loop = true;
+    audio.play().then(() => {
+      console.log('🎵 BEAST MODE PHONK ACTIVATED 🔥');
+    }).catch(e => {
+      console.log('Audio blocked:', e);
+    });
+  }, []);
+
+  const startBeastInitialization = () => {
+    setShowInitialMessage(false);
+    
+    // Start image sequence
     const startImagesTimer = setTimeout(() => {
       setShowImages(true);
-    }, 1000);
+    }, 2000);
 
     // Progress simulation
     const progressInterval = setInterval(() => {
@@ -65,37 +79,35 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
         if (prev >= 100) {
           clearInterval(progressInterval);
           setLoadingComplete(true);
-          setTimeout(onComplete, 1500);
+          setTimeout(onComplete, 2500);
           return 100;
         }
-        return prev + Math.random() * 15;
+        return prev + (8 + (prev * 0.02));
       });
-    }, 200);
+    }, 400);
 
     // Image rotation
     const imageInterval = setInterval(() => {
       setCurrentImageIndex(prev => (prev + 1) % beastImages.length);
-    }, 800);
-
-    // Play PHONK sound (will be added by user)
-    const playBeastSound = () => {
-      try {
-        const audio = new Audio('/phonk-beast.mp3');
-        audio.volume = 0.3;
-        audio.play().catch(e => console.log('Audio play failed:', e));
-      } catch (e) {
-        console.log('Audio not found - add phonk-beast.mp3 to public folder');
-      }
-    };
-    
-    playBeastSound();
+    }, 1500);
 
     return () => {
       clearTimeout(startImagesTimer);
       clearInterval(progressInterval);
       clearInterval(imageInterval);
     };
-  }, [onComplete]);
+  };
+
+  // Auto start
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (showInitialMessage) {
+        startBeastInitialization();
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [showInitialMessage]);
 
   const currentImage = beastImages[currentImageIndex];
 
@@ -108,7 +120,6 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
     >
       {/* ELECTRIC BACKGROUND */}
       <div className="absolute inset-0">
-        {/* Animated grid */}
         <motion.div
           className="absolute inset-0 opacity-20"
           animate={{
@@ -125,12 +136,12 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
         />
 
         {/* Electric bolts */}
-        {[...Array(6)].map((_, i) => (
+        {[15, 30, 45, 60, 75, 90].map((left, i) => (
           <motion.div
-            key={i}
+            key={`bolt-${i}`}
             className="absolute w-1 bg-gradient-to-b from-red-500 to-transparent"
             style={{
-              left: `${15 + i * 15}%`,
+              left: `${left}%`,
               height: '100%'
             }}
             animate={{
@@ -147,19 +158,21 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
         ))}
 
         {/* Glowing orbs */}
-        {[...Array(4)].map((_, i) => (
+        {[
+          { left: '20%', top: '20%' },
+          { left: '50%', top: '30%' },
+          { left: '80%', top: '60%' },
+          { left: '30%', top: '70%' }
+        ].map((position, i) => (
           <motion.div
-            key={i}
+            key={`orb-${i}`}
             className="absolute w-32 h-32 bg-red-600/30 rounded-full blur-3xl"
-            style={{
-              left: `${Math.random() * 80}%`,
-              top: `${Math.random() * 80}%`
-            }}
+            style={position}
             animate={{
               scale: [1, 2, 1],
               opacity: [0.3, 0.8, 0.3],
-              x: [0, 100, 0],
-              y: [0, -50, 0]
+              x: [0, 50 + i * 20, 0],
+              y: [0, -25 - i * 10, 0]
             }}
             transition={{
               duration: 3 + i,
@@ -171,194 +184,266 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
       </div>
 
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-8">
-        {/* MAIN LOGO */}
-        <motion.div
-          className="text-center mb-12"
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-        >
-          <motion.div
-            className="text-8xl md:text-9xl mb-4"
-            animate={{
-              textShadow: [
-                '0 0 20px rgba(255,0,64,0.8), 0 0 40px rgba(255,0,64,0.6)',
-                '0 0 40px rgba(255,0,64,1), 0 0 80px rgba(255,0,64,0.8)',
-                '0 0 20px rgba(255,0,64,0.8), 0 0 40px rgba(255,0,64,0.6)'
-              ]
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            💀
-          </motion.div>
-          
-          <motion.h1
-            className="text-4xl md:text-6xl font-black font-arnold mb-4"
-            animate={{
-              backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
-            }}
-            transition={{ duration: 3, repeat: Infinity }}
-            style={{
-              background: 'linear-gradient(45deg, #ff0040, #ff4000, #ff0040, #dc2626)',
-              backgroundSize: '300% 300%',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}
-          >
-            POWERPREP
-          </motion.h1>
-          
-          <motion.p
-            className="text-xl md:text-2xl font-bold text-red-400 uppercase tracking-wider"
-            animate={{ opacity: [0.7, 1, 0.7] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            BEAST MODE ACTIVATION
-          </motion.p>
-        </motion.div>
-
-        {/* LEGEND IMAGES */}
-        <AnimatePresence mode="wait">
-          {showImages && (
+        {/* INITIAL BEAST MESSAGE */}
+        <AnimatePresence>
+          {showInitialMessage && (
             <motion.div
-              key={currentImageIndex}
-              className="relative w-64 h-80 md:w-80 md:h-96 mb-8"
-              initial={{ opacity: 0, scale: 0.5, rotateY: 90 }}
-              animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-              exit={{ opacity: 0, scale: 0.5, rotateY: -90 }}
-              transition={{ duration: 0.5 }}
+              className="text-center"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.5 }}
+              transition={{ duration: 1 }}
             >
-              {/* Electric frame */}
               <motion.div
-                className="absolute inset-0 border-4 border-red-500 rounded-lg"
+                className="text-9xl mb-8"
+                animate={{
+                  textShadow: [
+                    '0 0 30px rgba(255,0,64,1)',
+                    '0 0 60px rgba(255,0,64,1), 0 0 90px rgba(255,0,64,0.8)',
+                    '0 0 30px rgba(255,0,64,1)'
+                  ],
+                  scale: [1, 1.1, 1]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                💀
+              </motion.div>
+              
+              <motion.h1
+                className="text-6xl md:text-8xl font-black font-arnold mb-8"
+                animate={{
+                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+                style={{
+                  background: 'linear-gradient(45deg, #ff0040, #ff4000, #ff0040, #dc2626)',
+                  backgroundSize: '300% 300%',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}
+              >
+                UNLEASH THE BEAST
+              </motion.h1>
+
+              <motion.button
+                onClick={startBeastInitialization}
+                className="px-12 py-6 bg-gradient-to-r from-red-600 to-red-700 text-white font-black text-2xl font-arnold uppercase tracking-wider rounded-2xl border-2 border-red-500/50"
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: '0 0 30px rgba(255,0,64,0.8)'
+                }}
+                whileTap={{ scale: 0.95 }}
                 animate={{
                   boxShadow: [
-                    '0 0 0 0 rgba(255,0,64,0.8), inset 0 0 0 0 rgba(255,0,64,0.4)',
-                    '0 0 30px 10px rgba(255,0,64,0.6), inset 0 0 20px 5px rgba(255,0,64,0.2)',
-                    '0 0 0 0 rgba(255,0,64,0.8), inset 0 0 0 0 rgba(255,0,64,0.4)'
+                    '0 15px 35px rgba(220,38,38,0.6)',
+                    '0 15px 35px rgba(220,38,38,0.8)',
+                    '0 15px 35px rgba(220,38,38,0.6)'
                   ]
                 }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              />
-              
-              {/* Image */}
-              <img
-                src={currentImage.url}
-                alt={currentImage.name}
-                className="w-full h-full object-cover rounded-lg"
-                style={{ filter: 'contrast(1.2) saturate(1.3)' }}
-              />
-              
-              {/* Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 rounded-lg" />
-              
-              {/* Legend info */}
-              <div className="absolute bottom-4 left-4 right-4 text-center">
-                <motion.h3
-                  className="text-xl md:text-2xl font-black font-arnold text-white mb-2 uppercase tracking-wider"
-                  animate={{
-                    textShadow: [
-                      '0 0 10px rgba(255,255,255,0.8)',
-                      '0 0 20px rgba(255,0,64,0.8)',
-                      '0 0 10px rgba(255,255,255,0.8)'
-                    ]
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  {currentImage.name}
-                </motion.h3>
-                <p className="text-sm md:text-base font-bold text-red-400 italic uppercase tracking-wide">
-                  "{currentImage.quote}"
-                </p>
-              </div>
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                ACTIVATE BEAST MODE
+              </motion.button>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* LOADING BAR */}
-        <div className="w-full max-w-md mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-red-400 font-bold uppercase tracking-wider">
-              LOADING BEAST MODE
-            </span>
-            <span className="text-red-400 font-bold">
-              {Math.round(progress)}%
-            </span>
-          </div>
-          
-          <div className="relative h-4 bg-dark-800 rounded-full overflow-hidden border border-red-500/50">
+        {/* MAIN LOADING CONTENT */}
+        <AnimatePresence>
+          {!showInitialMessage && (
             <motion.div
-              className="h-full bg-gradient-to-r from-red-600 via-red-500 to-red-600 rounded-full"
-              style={{ width: `${progress}%` }}
-              animate={{
-                backgroundPosition: ['0% 50%', '100% 50%']
-              }}
-              transition={{ duration: 1, repeat: Infinity }}
-            />
-            
-            {/* Electric sparks */}
-            <motion.div
-              className="absolute top-0 right-0 w-2 h-full bg-white rounded-full"
-              animate={{
-                opacity: [0, 1, 0],
-                scale: [1, 1.5, 1]
-              }}
-              transition={{ duration: 0.5, repeat: Infinity }}
-              style={{ left: `${progress}%` }}
-            />
-          </div>
-        </div>
-
-        {/* LOADING MESSAGES */}
-        <motion.div
-          className="text-center"
-          animate={{ opacity: [0.7, 1, 0.7] }}
-          transition={{ duration: 1, repeat: Infinity }}
-        >
-          <div className="text-lg md:text-xl font-black font-arnold text-red-500 uppercase tracking-wider mb-2">
-            {progress < 25 && "AWAKENING THE BEAST..."}
-            {progress >= 25 && progress < 50 && "LOADING ARNOLD'S WISDOM..."}
-            {progress >= 50 && progress < 75 && "INJECTING MENTZER'S INTENSITY..."}
-            {progress >= 75 && progress < 95 && "PREPARING FOR DOMINATION..."}
-            {progress >= 95 && !loadingComplete && "READY TO CONQUER..."}
-            {loadingComplete && "BEAST MODE ACTIVATED!"}
-          </div>
-          
-          <div className="text-sm text-gray-400 font-bold uppercase tracking-widest">
-            PREPARING FOR TOTAL DOMINATION
-          </div>
-        </motion.div>
-
-        {/* COMPLETION EXPLOSION */}
-        {loadingComplete && (
-          <motion.div
-            className="absolute inset-0 pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            {[...Array(20)].map((_, i) => (
+              className="text-center w-full"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+            >
+              {/* MAIN LOGO */}
               <motion.div
-                key={i}
-                className="absolute w-2 h-2 bg-red-500 rounded-full"
-                style={{
-                  left: '50%',
-                  top: '50%'
-                }}
-                animate={{
-                  x: [0, (Math.random() - 0.5) * 800],
-                  y: [0, (Math.random() - 0.5) * 600],
-                  opacity: [1, 0],
-                  scale: [1, 0]
-                }}
-                transition={{
-                  duration: 1.5,
-                  delay: i * 0.05
-                }}
-              />
-            ))}
-          </motion.div>
-        )}
+                className="mb-12"
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ duration: 1, ease: "easeOut" }}
+              >
+                <motion.div
+                  className="text-8xl md:text-9xl mb-4"
+                  animate={{
+                    textShadow: [
+                      '0 0 20px rgba(255,0,64,0.8), 0 0 40px rgba(255,0,64,0.6)',
+                      '0 0 40px rgba(255,0,64,1), 0 0 80px rgba(255,0,64,0.8)',
+                      '0 0 20px rgba(255,0,64,0.8), 0 0 40px rgba(255,0,64,0.6)'
+                    ]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  💀
+                </motion.div>
+                
+                <motion.h1
+                  className="text-4xl md:text-6xl font-black font-arnold mb-4"
+                  animate={{
+                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  style={{
+                    background: 'linear-gradient(45deg, #ff0040, #ff4000, #ff0040, #dc2626)',
+                    backgroundSize: '300% 300%',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  }}
+                >
+                  POWERPREP
+                </motion.h1>
+                
+                <motion.p
+                  className="text-xl md:text-2xl font-bold text-red-400 uppercase tracking-wider"
+                  animate={{ opacity: [0.7, 1, 0.7] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  BEAST MODE ACTIVATION
+                </motion.p>
+              </motion.div>
+
+              {/* LEGEND IMAGES */}
+              <AnimatePresence mode="wait">
+                {showImages && (
+                  <motion.div
+                    key={currentImageIndex}
+                    className="relative w-64 h-80 md:w-80 md:h-96 mb-8 mx-auto"
+                    initial={{ opacity: 0, scale: 0.5, rotateY: 90 }}
+                    animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                    exit={{ opacity: 0, scale: 0.5, rotateY: -90 }}
+                    transition={{ duration: 0.8 }}
+                  >
+                    <motion.div
+                      className="absolute inset-0 border-4 border-red-500 rounded-lg"
+                      animate={{
+                        boxShadow: [
+                          '0 0 0 0 rgba(255,0,64,0.8), inset 0 0 0 0 rgba(255,0,64,0.4)',
+                          '0 0 30px 10px rgba(255,0,64,0.6), inset 0 0 20px 5px rgba(255,0,64,0.2)',
+                          '0 0 0 0 rgba(255,0,64,0.8), inset 0 0 0 0 rgba(255,0,64,0.4)'
+                        ]
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                    
+                    <img
+                      src={currentImage.url}
+                      alt={currentImage.name}
+                      className="w-full h-full object-cover rounded-lg"
+                      style={{ filter: 'contrast(1.2) saturate(1.3)' }}
+                    />
+                    
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 rounded-lg" />
+                    
+                    <div className="absolute bottom-4 left-4 right-4 text-center">
+                      <motion.h3
+                        className="text-xl md:text-2xl font-black font-arnold text-white mb-2 uppercase tracking-wider"
+                        animate={{
+                          textShadow: [
+                            '0 0 10px rgba(255,255,255,0.8)',
+                            '0 0 20px rgba(255,0,64,0.8)',
+                            '0 0 10px rgba(255,255,255,0.8)'
+                          ]
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        {currentImage.name}
+                      </motion.h3>
+                      <p className="text-sm md:text-base font-bold text-red-400 italic uppercase tracking-wide">
+                        "{currentImage.quote}"
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* LOADING BAR */}
+              <div className="w-full max-w-md mb-8 mx-auto">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-red-400 font-bold uppercase tracking-wider">
+                    LOADING BEAST MODE
+                  </span>
+                  <span className="text-red-400 font-bold">
+                    {Math.round(progress)}%
+                  </span>
+                </div>
+                
+                <div className="relative h-4 bg-dark-800 rounded-full overflow-hidden border border-red-500/50">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-red-600 via-red-500 to-red-600 rounded-full"
+                    style={{ width: `${progress}%` }}
+                    animate={{
+                      backgroundPosition: ['0% 50%', '100% 50%']
+                    }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  />
+                  
+                  <motion.div
+                    className="absolute top-0 right-0 w-2 h-full bg-white rounded-full"
+                    animate={{
+                      opacity: [0, 1, 0],
+                      scale: [1, 1.5, 1]
+                    }}
+                    transition={{ duration: 0.5, repeat: Infinity }}
+                    style={{ left: `${progress}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* LOADING MESSAGES */}
+              <motion.div
+                className="text-center"
+                animate={{ opacity: [0.7, 1, 0.7] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                <div className="text-lg md:text-xl font-black font-arnold text-red-500 uppercase tracking-wider mb-2">
+                  {progress < 25 && "AWAKENING THE BEAST..."}
+                  {progress >= 25 && progress < 50 && "LOADING ARNOLD'S WISDOM..."}
+                  {progress >= 50 && progress < 75 && "INJECTING MENTZER'S INTENSITY..."}
+                  {progress >= 75 && progress < 95 && "PREPARING FOR DOMINATION..."}
+                  {progress >= 95 && !loadingComplete && "READY TO CONQUER..."}
+                  {loadingComplete && "BEAST MODE ACTIVATED!"}
+                </div>
+                
+                <div className="text-sm text-gray-400 font-bold uppercase tracking-widest">
+                  PREPARING FOR TOTAL DOMINATION
+                </div>
+              </motion.div>
+
+              {/* COMPLETION EXPLOSION */}
+              {loadingComplete && (
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  {Array.from({ length: 20 }, (_, i) => (
+                    <motion.div
+                      key={`explosion-${i}`}
+                      className="absolute w-2 h-2 bg-red-500 rounded-full"
+                      style={{
+                        left: '50%',
+                        top: '50%'
+                      }}
+                      animate={{
+                        x: [0, (i % 2 === 0 ? 1 : -1) * (200 + i * 20)],
+                        y: [0, (i % 3 === 0 ? 1 : -1) * (150 + i * 15)],
+                        opacity: [1, 0],
+                        scale: [1, 0]
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        delay: i * 0.05
+                      }}
+                    />
+                  ))}
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );
@@ -394,26 +479,8 @@ export default function RootLayout({
             className="min-h-screen"
           >
             {children}
-            {/* BEAST MODE PHONK AUDIO */}
-            <BeastAudio autoPlay={true} loop={true} volume={0.3} />
           </motion.div>
         )}
-
-        {/* BEAST MODE SCRIPTS */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if (typeof window !== 'undefined') {
-                window.addEventListener('load', function() {
-                  console.log('%c💀 BEAST MODE FULLY LOADED 💀', 'color: #dc2626; font-size: 24px; font-weight: bold; text-shadow: 0 0 10px #dc2626;');
-                  console.log('%cPOWERPREP - ARNOLD + MENTZER + PURE INTENSITY', 'color: #ef4444; font-size: 16px; font-weight: bold;');
-                  console.log('%c"I\\'LL BE BACK... STRONGER" - Arnold', 'color: #fbbf24; font-style: italic; font-size: 14px;');
-                  console.log('%c"THE INTENSITY OF EFFORT IS THE DETERMINING FACTOR" - Mentzer', 'color: #f59e0b; font-style: italic; font-size: 14px;');
-                });
-              }
-            `
-          }}
-        />
       </body>
     </html>
   );

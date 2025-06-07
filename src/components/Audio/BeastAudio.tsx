@@ -10,7 +10,7 @@ interface BeastAudioProps {
 }
 
 export const BeastAudio: React.FC<BeastAudioProps> = ({ 
-  autoPlay = true, 
+  autoPlay = true, // ACTIVÉ par défaut maintenant
   loop = true, 
   volume = 0.3 
 }) => {
@@ -48,16 +48,15 @@ export const BeastAudio: React.FC<BeastAudioProps> = ({
       const playAudio = async () => {
         try {
           await audio.play();
-          console.log('🎵 BEAST MODE PHONK ACTIVATED 🔥');
+          console.log('🎵 BEAST MODE PHONK ACTIVATED DIRECTLY 🔥');
         } catch (error) {
           console.log('🎵 Auto-play blocked - user interaction required');
           setShowControls(true);
         }
       };
       
-      // Delay to allow user interaction
-      const timer = setTimeout(playAudio, 1000);
-      return () => clearTimeout(timer);
+      // Try immediately
+      playAudio();
     }
 
     return () => {
@@ -67,8 +66,6 @@ export const BeastAudio: React.FC<BeastAudioProps> = ({
       audio.removeEventListener('canplay', handleCanPlay);
     };
   }, [autoPlay, loop, currentVolume]);
-
-
 
   const togglePlay = async () => {
     const audio = audioRef.current;
@@ -109,6 +106,23 @@ export const BeastAudio: React.FC<BeastAudioProps> = ({
     }
   };
 
+  // BEAST MODE GLOBAL MUSIC CONTROL
+  useEffect(() => {
+    // Expose global controls for the loading screen
+    if (typeof window !== 'undefined') {
+      (window as any).beastAudio = {
+        play: () => audioRef.current?.play(),
+        pause: () => audioRef.current?.pause(),
+        setVolume: (vol: number) => {
+          if (audioRef.current) {
+            audioRef.current.volume = vol;
+            setCurrentVolume(vol);
+          }
+        }
+      };
+    }
+  }, []);
+
   // Don't render if audio failed to load
   if (audioError) {
     return null;
@@ -127,15 +141,20 @@ export const BeastAudio: React.FC<BeastAudioProps> = ({
         Your browser does not support the audio element.
       </audio>
 
-      {/* FLOATING AUDIO CONTROLS */}
+      {/* FLOATING AUDIO CONTROLS - ONLY WHEN NEEDED */}
       <AnimatePresence>
-        {(showControls || isPlaying) && (
+        {(showControls || (isPlaying && !showControls)) && (
           <motion.div
-            className="fixed top-6 right-6 z-50"
+            className="fixed top-6 right-6 z-40"
             initial={{ opacity: 0, scale: 0.5, y: -50 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.5, y: -50 }}
             transition={{ duration: 0.3 }}
+            onHoverStart={() => setShowControls(true)}
+            onHoverEnd={() => {
+              // Only hide if not actively needed
+              if (!isPlaying) setShowControls(false);
+            }}
           >
             <motion.div
               className="bg-gradient-to-r from-dark-900/90 to-dark-800/90 backdrop-blur-xl border-2 border-red-500/50 rounded-xl p-4 shadow-beast"
@@ -151,6 +170,7 @@ export const BeastAudio: React.FC<BeastAudioProps> = ({
               <div className="flex items-center gap-3">
                 {/* PLAY/PAUSE BUTTON */}
                 <motion.button
+                  onClick={togglePlay}
                   className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-white transition-all duration-300 ${
                     isPlaying 
                       ? 'bg-gradient-to-r from-red-600 to-red-700 shadow-[0_0_20px_rgba(255,0,64,0.6)]' 
@@ -208,10 +228,10 @@ export const BeastAudio: React.FC<BeastAudioProps> = ({
                       animate={{ opacity: [0.7, 1, 0.7] }}
                       transition={{ duration: 1, repeat: Infinity }}
                     >
-                      PHONK ON
+                      BEAST ON
                     </motion.span>
                   ) : (
-                    <span className="text-gray-400">PHONK OFF</span>
+                    <span className="text-gray-400">BEAST OFF</span>
                   )}
                 </div>
               </div>
@@ -242,55 +262,29 @@ export const BeastAudio: React.FC<BeastAudioProps> = ({
         )}
       </AnimatePresence>
 
-      {/* CLICK TO UNMUTE MESSAGE */}
+      {/* EMERGENCY PLAY BUTTON - ONLY IF AUDIO REALLY FAILED */}
       <AnimatePresence>
-        {showControls && !isPlaying && (
+        {showControls && !isPlaying && audioError && (
           <motion.div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={togglePlay}
+            className="fixed bottom-6 right-6 z-[60]"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
           >
-            <motion.div
-              className="bg-gradient-to-r from-dark-900/95 to-dark-800/95 border-2 border-red-500/50 rounded-2xl p-8 text-center"
-              initial={{ scale: 0.5, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              onClick={(e) => e.stopPropagation()}
+            <motion.button
+              onClick={togglePlay}
+              className="bg-gradient-to-r from-red-600 to-red-700 text-white font-black px-6 py-3 rounded-xl border-2 border-red-500/50 shadow-beast"
+              whileHover={{ 
+                scale: 1.05,
+                boxShadow: '0 0 30px rgba(255,0,64,0.8)'
+              }}
+              whileTap={{ scale: 0.95 }}
             >
-              <motion.div
-                className="text-6xl mb-4"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 360, 0]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                🎵
-              </motion.div>
-              
-              <h3 className="text-2xl font-black font-arnold text-red-500 mb-4 uppercase tracking-wider">
-                ACTIVATE BEAST PHONK
-              </h3>
-              
-              <p className="text-gray-400 font-bold mb-6 uppercase tracking-wide">
-                CLICK TO UNLEASH THE BEAST SOUNDTRACK
-              </p>
-              
-              <motion.button
-                onClick={togglePlay}
-                className="px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-black uppercase tracking-wider rounded-xl border-2 border-red-500/50"
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: '0 0 30px rgba(255,0,64,0.8)'
-                }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Flame className="inline mr-2" size={20} />
-                UNLEASH THE PHONK
-              </motion.button>
-            </motion.div>
+              <Flame className="inline mr-2" size={20} />
+              <span className="font-arnold uppercase tracking-wider">
+                ACTIVATE BEAST
+              </span>
+            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>
