@@ -313,7 +313,7 @@ export default function EvenementsPage() {
                       <Input
                         label="📝 NOM DE LA COMPÉTITION"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e: any) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="Ex: Championnat Régional Beast Mode"
                         required
                       />
@@ -323,7 +323,7 @@ export default function EvenementsPage() {
                         label="📅 DATE DE GUERRE"
                         type="date"
                         value={formData.date}
-                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                        onChange={(e: any) => setFormData({ ...formData, date: e.target.value })}
                         min={new Date().toISOString().split('T')[0]}
                         required
                       />
@@ -349,7 +349,7 @@ export default function EvenementsPage() {
                       <Input
                         label="📍 CHAMP DE BATAILLE (OPTIONNEL)"
                         value={formData.location}
-                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                        onChange={(e: any) => setFormData({ ...formData, location: e.target.value })}
                         placeholder="Ex: Paris, France"
                       />
                       
