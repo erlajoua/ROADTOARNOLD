@@ -7,36 +7,23 @@ import {
   deleteDoc, 
   doc, 
   query, 
-  where, 
-  orderBy, 
   onSnapshot,
   DocumentData 
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { useAuth } from './useAuth';
+
+// STATIC USER ID - POUR SIMULATION SANS AUTH
+const STATIC_USER_ID = 'beast-mode-user';
 
 export const useFirestore = <T extends DocumentData>(collectionName: string) => {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
 
   useEffect(() => {
-    console.log(`🔥 useFirestore: Setting up listener for ${collectionName}`, { user: user?.uid });
+    console.log(`🔥 useFirestore: Setting up listener for ${collectionName}`);
     
-    if (!user) {
-      console.log(`🔥 useFirestore: No user, clearing data for ${collectionName}`);
-      setData([]);
-      setLoading(false);
-      return;
-    }
-
-    const q = query(
-      collection(db, collectionName),
-      where('userId', '==', user.uid)
-      // Temporairement retiré orderBy pour éviter le problème d'index
-      // orderBy('createdAt', 'desc')
-    );
+    const q = query(collection(db, collectionName));
 
     console.log(`🔥 useFirestore: Creating listener for ${collectionName}`);
 
@@ -76,20 +63,15 @@ export const useFirestore = <T extends DocumentData>(collectionName: string) => 
       console.log(`🔥 useFirestore: Cleaning up listener for ${collectionName}`);
       unsubscribe();
     };
-  }, [user, collectionName]);
+  }, [collectionName]);
 
   const add = async (item: Omit<T, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => {
-    if (!user) {
-      console.error(`❌ useFirestore: No user when trying to add to ${collectionName}`);
-      throw new Error('No user authenticated');
-    }
-    
     console.log(`➕ useFirestore: Adding item to ${collectionName}:`, item);
     
     try {
       const docData = {
         ...item,
-        userId: user.uid,
+        userId: STATIC_USER_ID,
         createdAt: new Date(),
         updatedAt: new Date()
       };

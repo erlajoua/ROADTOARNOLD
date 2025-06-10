@@ -3,9 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Target, Calendar, BookOpen, Zap, Heart, LogOut, Flame } from 'lucide-react';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { Menu, X, Target, Calendar, BookOpen, Zap, Heart, Flame } from 'lucide-react';
 
 const navItems = [
   { href: '/', label: 'ACCUEIL', icon: Flame },
@@ -19,14 +17,6 @@ const navItems = [
 export const Navigation: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error('Erreur lors de la déconnexion:', error);
-    }
-  };
 
   return (
     <>
@@ -120,15 +110,6 @@ export const Navigation: React.FC = () => {
                   </Link>
                 );
               })}
-              
-              {/* LOGOUT BUTTON - RAGE QUIT */}
-              <button
-                onClick={handleLogout}
-                className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-600/20 border border-transparent hover:border-red-500/30 font-bold text-sm font-arnold uppercase tracking-wider transition-all duration-300 hover:scale-105 hover:-translate-y-1 active:scale-95"
-              >
-                <LogOut size={16} />
-                <span>QUIT</span>
-              </button>
             </div>
 
             {/* MOBILE MENU BUTTON - BEAST MODE */}
@@ -231,24 +212,6 @@ export const Navigation: React.FC = () => {
                     </motion.div>
                   );
                 })}
-                
-                {/* MOBILE LOGOUT */}
-                <motion.div
-                  initial={{ x: -100, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: navItems.length * 0.1, duration: 0.3 }}
-                >
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-600/20 border border-transparent hover:border-red-500/30 font-bold text-base font-arnold uppercase tracking-wider transition-all duration-300 w-full text-left"
-                  >
-                    <LogOut size={20} />
-                    <span>RAGE QUIT</span>
-                  </button>
-                </motion.div>
               </div>
               
               {/* BOTTOM RED ACCENT */}

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BeastAudio } from '@/components/Audio/BeastAudio';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -53,25 +54,13 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
   const [loadingComplete, setLoadingComplete] = useState(false);
   const [showInitialMessage, setShowInitialMessage] = useState(true);
 
-  // LANCER LA PUTAIN DE MUSIQUE DIRECT
-  useEffect(() => {
-    const audio = new Audio('/phonk-beast.mp3');
-    audio.volume = 0.3;
-    audio.loop = true;
-    audio.play().then(() => {
-      console.log('🎵 BEAST MODE PHONK ACTIVATED 🔥');
-    }).catch(e => {
-      console.log('Audio blocked:', e);
-    });
-  }, []);
-
   const startBeastInitialization = () => {
     setShowInitialMessage(false);
     
     // Start image sequence
     const startImagesTimer = setTimeout(() => {
       setShowImages(true);
-    }, 2000);
+    }, 1000);
 
     // Progress simulation
     const progressInterval = setInterval(() => {
@@ -79,17 +68,17 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
         if (prev >= 100) {
           clearInterval(progressInterval);
           setLoadingComplete(true);
-          setTimeout(onComplete, 2500);
+          setTimeout(onComplete, 1500);
           return 100;
         }
-        return prev + (8 + (prev * 0.02));
+        return prev + (12 + (prev * 0.02));
       });
-    }, 400);
+    }, 300);
 
     // Image rotation
     const imageInterval = setInterval(() => {
       setCurrentImageIndex(prev => (prev + 1) % beastImages.length);
-    }, 1500);
+    }, 1200);
 
     return () => {
       clearTimeout(startImagesTimer);
@@ -98,16 +87,14 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
     };
   };
 
-  // Auto start
+  // Auto start DIRECT
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (showInitialMessage) {
-        startBeastInitialization();
-      }
-    }, 2000);
+      startBeastInitialization();
+    }, 1000);
 
     return () => clearTimeout(timer);
-  }, [showInitialMessage]);
+  }, []);
 
   const currentImage = beastImages[currentImageIndex];
 
@@ -223,28 +210,8 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
                   backgroundClip: 'text'
                 }}
               >
-                UNLEASH THE BEAST
+                BEAST MODE LOADING
               </motion.h1>
-
-              <motion.button
-                onClick={startBeastInitialization}
-                className="px-12 py-6 bg-gradient-to-r from-red-600 to-red-700 text-white font-black text-2xl font-arnold uppercase tracking-wider rounded-2xl border-2 border-red-500/50"
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: '0 0 30px rgba(255,0,64,0.8)'
-                }}
-                whileTap={{ scale: 0.95 }}
-                animate={{
-                  boxShadow: [
-                    '0 15px 35px rgba(220,38,38,0.6)',
-                    '0 15px 35px rgba(220,38,38,0.8)',
-                    '0 15px 35px rgba(220,38,38,0.6)'
-                  ]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                ACTIVATE BEAST MODE
-              </motion.button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -465,6 +432,9 @@ export default function RootLayout({
       </head>
       
       <body className={`${inter.className} antialiased`}>
+        {/* BEAST AUDIO - TOUJOURS ACTIF */}
+        <BeastAudio autoPlay={true} loop={true} volume={0.4} />
+        
         <AnimatePresence>
           {showLoading && (
             <BeastLoadingScreen onComplete={() => setShowLoading(false)} />
