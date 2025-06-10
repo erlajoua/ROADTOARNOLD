@@ -32,16 +32,16 @@ export const Navigation: React.FC = () => {
     <>
       {/* NAVIGATION BEAST MODE - ARNOLD + MENTZER STYLE */}
       <motion.nav 
-        className="relative bg-gradient-to-r from-dark-900 via-dark-800 to-dark-900 border-b-2 border-red-600/30 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.8)]"
+        className="relative bg-gradient-to-r from-dark-900 via-dark-800 to-dark-900 border-b-2 border-red-600/30 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.8)] z-40"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         {/* RED NEON TOP LINE */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent pointer-events-none" />
         
         {/* ELECTRIC PATTERN BACKGROUND */}
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_50%,rgba(255,0,64,0.3)_0%,transparent_50%)]" />
           <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_50%,rgba(220,38,38,0.3)_0%,transparent_50%)]" />
         </div>
@@ -61,7 +61,7 @@ export const Navigation: React.FC = () => {
                 </span>
                 {/* GLOW EFFECT */}
                 <motion.div
-                  className="absolute inset-0 text-3xl opacity-50 blur-sm"
+                  className="absolute inset-0 text-3xl opacity-50 blur-sm pointer-events-none"
                   animate={{
                     textShadow: [
                       '0 0 10px rgba(239, 68, 68, 0.8)',
@@ -75,12 +75,9 @@ export const Navigation: React.FC = () => {
                 </motion.div>
               </motion.div>
               <div className="flex flex-col">
-                <motion.span 
-                  className="text-xl font-black font-arnold text-red-500 tracking-wider leading-none"
-                  whileHover={{ scale: 1.05 }}
-                >
+                <span className="text-xl font-black font-arnold text-red-500 tracking-wider leading-none">
                   POWERPREP
-                </motion.span>
+                </span>
                 <span className="text-xs text-gray-400 font-bold uppercase tracking-widest">
                   BEAST MODE
                 </span>
@@ -99,55 +96,46 @@ export const Navigation: React.FC = () => {
                     href={item.href}
                     className="relative group"
                   >
-                    <motion.div
+                    <div
                       className={`
                         flex items-center space-x-2 px-4 py-2 rounded-lg
                         font-bold text-sm font-arnold uppercase tracking-wider
                         transition-all duration-300 ease-out
+                        hover:scale-105 hover:-translate-y-1
+                        active:scale-95 active:translate-y-0
                         ${isActive 
                           ? 'bg-gradient-to-r from-red-600/80 to-red-700/80 text-white border border-red-500/50' 
                           : 'text-gray-300 hover:text-white hover:bg-red-600/20 border border-transparent hover:border-red-500/30'
                         }
                       `}
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
                     >
                       <Icon size={16} />
                       <span>{item.label}</span>
                       
                       {/* ACTIVE INDICATOR */}
                       {isActive && (
-                        <motion.div
-                          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-500 to-red-400"
-                          initial={{ width: 0 }}
-                          animate={{ width: '100%' }}
-                          transition={{ duration: 0.3 }}
-                        />
+                        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-red-500 to-red-400" />
                       )}
-                    </motion.div>
+                    </div>
                   </Link>
                 );
               })}
               
               {/* LOGOUT BUTTON - RAGE QUIT */}
-              <motion.button
+              <button
                 onClick={handleLogout}
-                className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-600/20 border border-transparent hover:border-red-500/30 font-bold text-sm font-arnold uppercase tracking-wider transition-all duration-300"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
+                className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-300 hover:text-red-400 hover:bg-red-600/20 border border-transparent hover:border-red-500/30 font-bold text-sm font-arnold uppercase tracking-wider transition-all duration-300 hover:scale-105 hover:-translate-y-1 active:scale-95"
               >
                 <LogOut size={16} />
                 <span>QUIT</span>
-              </motion.button>
+              </button>
             </div>
 
             {/* MOBILE MENU BUTTON - BEAST MODE */}
             <div className="md:hidden">
-              <motion.button
+              <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="relative p-2 text-gray-300 hover:text-red-500 focus:outline-none transition-colors duration-300"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                className="relative p-2 text-gray-300 hover:text-red-500 focus:outline-none transition-colors duration-300 hover:scale-110 active:scale-95"
               >
                 <AnimatePresence mode="wait">
                   {isMobileMenuOpen ? (
@@ -172,13 +160,13 @@ export const Navigation: React.FC = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.button>
+              </button>
             </div>
           </div>
         </div>
 
         {/* BOTTOM RED ACCENT */}
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-600 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-600 to-transparent pointer-events-none" />
       </motion.nav>
 
       {/* MOBILE MENU - PHONK DARKNESS */}
@@ -192,6 +180,7 @@ export const Navigation: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
+              style={{ pointerEvents: isMobileMenuOpen ? 'auto' : 'none' }}
             />
             
             {/* MOBILE MENU */}
@@ -201,9 +190,10 @@ export const Navigation: React.FC = () => {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -400, opacity: 0 }}
               transition={{ duration: 0.4, ease: "easeOut" }}
+              style={{ pointerEvents: 'auto' }}
             >
               {/* RED GLOW TOP */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent" />
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent pointer-events-none" />
               
               <div className="px-4 pt-4 pb-6 space-y-2">
                 {navItems.map((item, index) => {
@@ -235,11 +225,7 @@ export const Navigation: React.FC = () => {
                         
                         {/* ACTIVE INDICATOR */}
                         {isActive && (
-                          <motion.div
-                            className="ml-auto w-2 h-2 bg-red-500 rounded-full"
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 1, repeat: Infinity }}
-                          />
+                          <div className="ml-auto w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                         )}
                       </Link>
                     </motion.div>
@@ -266,7 +252,7 @@ export const Navigation: React.FC = () => {
               </div>
               
               {/* BOTTOM RED ACCENT */}
-              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-600 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-600 to-transparent pointer-events-none" />
             </motion.div>
           </>
         )}

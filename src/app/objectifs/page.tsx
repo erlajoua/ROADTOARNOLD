@@ -133,6 +133,17 @@ export default function ObjectifsPage() {
 		}
 	};
 
+	const getMovementColor = (movement: "bench" | "squat" | "deadlift") => {
+		switch (movement) {
+			case "bench":
+				return "from-red-600/20 to-red-700/30 border-red-500/50";
+			case "squat":
+				return "from-blue-600/20 to-blue-700/30 border-blue-500/50";
+			case "deadlift":
+				return "from-green-600/20 to-green-700/30 border-green-500/50";
+		}
+	};
+
 	const getMovementName = (movement: "bench" | "squat" | "deadlift") => {
 		switch (movement) {
 			case "bench":
@@ -186,16 +197,16 @@ export default function ObjectifsPage() {
 
 				{/* GROS bouton d'ajout si pas d'objectifs */}
 				{totalGoals === 0 && !showForm && (
-					<Card className="text-center py-12">
+					<Card className="text-center py-12 flex items-center justify-center">
 						<Target className="w-16 h-16 text-power-600 mx-auto mb-4" />
 						<h2 className="text-2xl font-bold text-iron-900 mb-4">
 							Créez votre premier objectif !
 						</h2>
 						<Button
 							onClick={() => setShowForm(true)}
-							className="bg-power-600 hover:bg-power-700 text-white px-8 py-4 text-xl font-bold"
+							className="bg-power-600 hover:bg-power-700 text-white px-8 py-4 text-xl font-bold w-full"
 						>
-							<Plus className="w-6 h-6 mr-3" />
+							<Plus className="w-6 h-6" />
 							COMMENCER MAINTENANT
 						</Button>
 					</Card>
@@ -226,18 +237,20 @@ export default function ObjectifsPage() {
 					</div>
 				</Card>
 
-				{/* Records personnels */}
+				{/* Records personnels - BEAST MODE */}
 				<Card title="🏆 Mes Records Personnels">
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 						{personalRecords.map((pr) => (
 							<div
 								key={pr.id}
-								className="text-center p-4 bg-gray-50 rounded-lg"
+								className={`text-center p-6 rounded-xl bg-gradient-to-br ${getMovementColor(
+									pr.movement
+								)} border backdrop-blur-sm transition-all duration-300 hover:scale-105`}
 							>
-								<div className="text-3xl mb-2">
+								<div className="text-4xl mb-4">
 									{getMovementIcon(pr.movement)}
 								</div>
-								<h3 className="font-semibold">
+								<h3 className="font-black text-red-500 text-lg uppercase tracking-wider mb-3">
 									{getMovementName(pr.movement)}
 								</h3>
 
@@ -247,7 +260,7 @@ export default function ObjectifsPage() {
 											type="number"
 											step="0.5"
 											defaultValue={pr.weight}
-											className="w-20 px-2 py-1 border rounded text-center"
+											className="w-20 px-2 py-1 bg-dark-800 border border-red-500/50 rounded text-center text-gray-100 font-bold"
 											onKeyPress={(e) => {
 												if (e.key === "Enter") {
 													const newWeight = Number(
@@ -272,7 +285,7 @@ export default function ObjectifsPage() {
 														Number(input.value)
 													);
 												}}
-												className="text-green-600 hover:text-green-800"
+												className="text-green-400 hover:text-green-300"
 											>
 												<Check className="w-4 h-4" />
 											</button>
@@ -280,7 +293,7 @@ export default function ObjectifsPage() {
 												onClick={() =>
 													setEditingPR(null)
 												}
-												className="text-red-600 hover:text-red-800"
+												className="text-red-400 hover:text-red-300"
 											>
 												<X className="w-4 h-4" />
 											</button>
@@ -288,12 +301,12 @@ export default function ObjectifsPage() {
 									</div>
 								) : (
 									<div className="mt-2">
-										<p className="text-2xl font-bold text-power-600">
+										<p className="text-3xl font-black text-red-500 mb-2">
 											{pr.weight} kg
 										</p>
 										<button
 											onClick={() => setEditingPR(pr.id)}
-											className="text-iron-500 hover:text-iron-700 mt-1"
+											className="text-gray-400 hover:text-red-400 transition-colors"
 										>
 											<Edit className="w-4 h-4 mx-auto" />
 										</button>
@@ -471,7 +484,7 @@ export default function ObjectifsPage() {
 				{loading ? (
 					<div className="text-center py-8">Chargement...</div>
 				) : totalGoals === 0 ? (
-					<Card className="text-center py-8">
+					<Card className="text-center py-8 flex items-center justify-center">
 						<Target className="w-12 h-12 text-iron-400 mx-auto mb-4" />
 						<p className="text-iron-600 mb-4">
 							Aucun objectif défini pour le moment

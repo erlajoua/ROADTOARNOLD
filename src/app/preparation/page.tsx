@@ -200,7 +200,7 @@ export default function PreparationPage() {
 												initial={{ x: -20 }}
 												whileHover={{ x: 0 }}
 											>
-												<span>ACTIVER</span>
+												<span>GO</span>
 												<motion.span
 													className="ml-3"
 													animate={{ x: [0, 8, 0] }}
@@ -283,7 +283,7 @@ export default function PreparationPage() {
 												initial={{ x: -20 }}
 												whileHover={{ x: 0 }}
 											>
-												<span>DÉCLENCHER</span>
+												<span>GO</span>
 												<motion.span
 													className="ml-3"
 													animate={{ x: [0, 8, 0] }}

@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
-import { AuthGuard } from '@/components/Auth/AuthGuard';
 import { Card } from '@/components/UI/Card';
 import Link from 'next/link';
 import { Target, Calendar, BookOpen, Zap, Heart, Flame, Skull, Trophy, Timer, Crown, Bolt } from 'lucide-react';
@@ -322,408 +321,406 @@ export default function HomePage() {
   }, []);
 
   return (
-    <AuthGuard>
-      <div className="min-h-screen relative overflow-hidden">
-        {/* INSANE ELECTRIC BACKGROUND */}
-        <div className="fixed inset-0 pointer-events-none">
-          {/* ANIMATED GRID */}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* INSANE ELECTRIC BACKGROUND */}
+      <div className="fixed inset-0 pointer-events-none">
+        {/* ANIMATED GRID */}
+        <motion.div
+          className="absolute inset-0 opacity-10"
+          animate={{
+            backgroundPosition: ['0% 0%', '100% 100%']
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255,0,64,0.8) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,0,64,0.8) 1px, transparent 1px),
+              radial-gradient(circle at 50% 50%, rgba(255,0,64,0.3) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px, 50px 50px, 20px 20px'
+          }}
+        />
+
+        {/* ELECTRIC PARTICLES */}
+        {[...Array(30)].map((_, i) => (
+          <ElectricParticle key={i} delay={i * 0.1} duration={2 + Math.random() * 2} />
+        ))}
+
+        {/* ELECTRIC BOLTS */}
+        {electricBolts.map(bolt => (
+          <ElectricBolt key={bolt.id} {...bolt} />
+        ))}
+
+        {/* FLOATING ENERGY ORBS */}
+        {[...Array(6)].map((_, i) => (
           <motion.div
-            className="absolute inset-0 opacity-10"
-            animate={{
-              backgroundPosition: ['0% 0%', '100% 100%']
-            }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+            key={i}
+            className="absolute w-32 h-32 rounded-full blur-3xl"
             style={{
-              backgroundImage: `
-                linear-gradient(rgba(255,0,64,0.8) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,0,64,0.8) 1px, transparent 1px),
-                radial-gradient(circle at 50% 50%, rgba(255,0,64,0.3) 1px, transparent 1px)
-              `,
-              backgroundSize: '50px 50px, 50px 50px, 20px 20px'
+              background: 'radial-gradient(circle, rgba(255,0,64,0.6) 0%, rgba(255,0,64,0.2) 50%, transparent 100%)',
+              left: `${20 + i * 15}%`,
+              top: `${10 + i * 15}%`
+            }}
+            animate={{
+              scale: [1, 2, 1],
+              opacity: [0.3, 0.8, 0.3],
+              x: [0, Math.sin(i) * 100, 0],
+              y: [0, Math.cos(i) * 100, 0]
+            }}
+            transition={{
+              duration: 4 + i,
+              repeat: Infinity,
+              delay: i * 0.5
             }}
           />
+        ))}
+      </div>
 
-          {/* ELECTRIC PARTICLES */}
-          {[...Array(30)].map((_, i) => (
-            <ElectricParticle key={i} delay={i * 0.1} duration={2 + Math.random() * 2} />
-          ))}
-
-          {/* ELECTRIC BOLTS */}
-          {electricBolts.map(bolt => (
-            <ElectricBolt key={bolt.id} {...bolt} />
-          ))}
-
-          {/* FLOATING ENERGY ORBS */}
-          {[...Array(6)].map((_, i) => (
+      <div className="relative z-10 space-y-12">
+        {/* HERO SECTION - ELECTRIC INSANITY */}
+        <motion.section 
+          className="relative py-20 overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          <div className="relative z-10 text-center px-4">
+            {/* SKULL ICON - ELECTRIC BEAST */}
             <motion.div
-              key={i}
-              className="absolute w-32 h-32 rounded-full blur-3xl"
-              style={{
-                background: 'radial-gradient(circle, rgba(255,0,64,0.6) 0%, rgba(255,0,64,0.2) 50%, transparent 100%)',
-                left: `${20 + i * 15}%`,
-                top: `${10 + i * 15}%`
-              }}
-              animate={{
-                scale: [1, 2, 1],
-                opacity: [0.3, 0.8, 0.3],
-                x: [0, Math.sin(i) * 100, 0],
-                y: [0, Math.cos(i) * 100, 0]
-              }}
-              transition={{
-                duration: 4 + i,
-                repeat: Infinity,
-                delay: i * 0.5
-              }}
-            />
-          ))}
-        </div>
-
-        <div className="relative z-10 space-y-12">
-          {/* HERO SECTION - ELECTRIC INSANITY */}
-          <motion.section 
-            className="relative py-20 overflow-hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-          >
-            <div className="relative z-10 text-center px-4">
-              {/* SKULL ICON - ELECTRIC BEAST */}
-              <motion.div
-                className="mb-8"
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ duration: 1, ease: "easeOut" }}
-              >
-                <motion.div
-                  className="text-9xl mb-4 inline-block cursor-pointer"
-                  animate={{
-                    textShadow: [
-                      '0 0 20px rgba(255,0,64,0.8), 0 0 40px rgba(255,0,64,0.6)',
-                      '0 0 40px rgba(255,0,64,1), 0 0 80px rgba(255,0,64,0.8), 0 0 120px rgba(255,0,64,0.6)',
-                      '0 0 20px rgba(255,0,64,0.8), 0 0 40px rgba(255,0,64,0.6)'
-                    ],
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0]
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  whileHover={{ 
-                    scale: 1.3, 
-                    rotate: 360,
-                    transition: { duration: 0.5 }
-                  }}
-                >
-                  💀
-                </motion.div>
-              </motion.div>
-
-              {/* MAIN TITLE - PURE ELECTRIC */}
-              <motion.h1
-                className="text-6xl md:text-8xl lg:text-9xl font-black font-arnold mb-6 leading-none cursor-pointer"
-                initial={{ y: 100, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 1, delay: 0.3 }}
-                whileHover={{ 
-                  scale: 1.05,
-                  textShadow: '0 0 50px rgba(255,0,64,1)'
-                }}
-              >
-                <motion.span
-                  animate={{
-                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                    textShadow: [
-                      '0 0 30px rgba(255,0,64,0.8)',
-                      '0 0 60px rgba(255,0,64,1), 0 0 90px rgba(255,0,64,0.8)',
-                      '0 0 30px rgba(255,0,64,0.8)'
-                    ]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                  style={{
-                    background: 'linear-gradient(45deg, #ff0040, #ff4000, #ffff00, #ff4000, #ff0040)',
-                    backgroundSize: '400% 400%',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text'
-                  }}
-                >
-                  POWER
-                </motion.span>
-                <br />
-                <motion.span
-                  animate={{
-                    backgroundPosition: ['100% 50%', '0% 50%', '100% 50%'],
-                    textShadow: [
-                      '0 0 40px rgba(255,0,64,1)',
-                      '0 0 80px rgba(255,0,64,1), 0 0 120px rgba(255,0,64,0.8)',
-                      '0 0 40px rgba(255,0,64,1)'
-                    ]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, delay: 1.5 }}
-                  style={{
-                    background: 'linear-gradient(45deg, #dc2626, #ff0040, #ff4000, #ff0040, #dc2626)',
-                    backgroundSize: '400% 400%',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text'
-                  }}
-                >
-                  PREP
-                </motion.span>
-              </motion.h1>
-
-              {/* SUBTITLE - ELECTRIC PULSE */}
-              <motion.div
-                className="mb-8"
-                initial={{ y: 50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 1, delay: 0.6 }}
-              >
-                <motion.p
-                  className="text-xl md:text-3xl font-bold text-gray-300 mb-4 font-arnold uppercase tracking-widest"
-                  animate={{
-                    textShadow: [
-                      '0 0 10px rgba(255,0,64,0.6)',
-                      '0 0 20px rgba(255,0,64,0.8)',
-                      '0 0 10px rgba(255,0,64,0.6)'
-                    ]
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  BEAST MODE ACTIVATED
-                </motion.p>
-                <motion.p
-                  className="text-lg md:text-xl text-red-400 font-bold uppercase tracking-wider"
-                  animate={{ 
-                    opacity: [0.7, 1, 0.7],
-                    scale: [1, 1.02, 1]
-                  }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  NO LIMITS • NO EXCUSES • PURE INTENSITY
-                </motion.p>
-              </motion.div>
-
-              {/* ROTATING QUOTES - ELECTRIC */}
-              <motion.div
-                className="mb-12 h-20 flex items-center justify-center relative"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, delay: 0.9 }}
-              >
-                {beastQuotes.map((quote, index) => (
-                  <motion.div
-                    key={index}
-                    className="absolute text-center"
-                    initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                    animate={{
-                      opacity: currentQuoteIndex === index ? 1 : 0,
-                      y: currentQuoteIndex === index ? 0 : 20,
-                      scale: currentQuoteIndex === index ? 1 : 0.8,
-                      textShadow: currentQuoteIndex === index ? [
-                        '0 0 10px rgba(255,0,64,0.8)',
-                        '0 0 20px rgba(255,0,64,1)',
-                        '0 0 10px rgba(255,0,64,0.8)'
-                      ] : '0 0 0px rgba(255,0,64,0)'
-                    }}
-                    transition={{ duration: 0.8, repeat: currentQuoteIndex === index ? Infinity : 0, repeatType: 'reverse' }}
-                  >
-                    <p className="text-lg md:text-xl font-bold text-red-500 font-arnold uppercase tracking-wider mb-2">
-                      "{quote.text}"
-                    </p>
-                    <p className="text-sm text-gray-400 font-bold uppercase tracking-widest">
-                      - {quote.author}
-                    </p>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              {/* CTA BUTTONS - ELECTRIC POWER */}
-              <motion.div
-                className="flex flex-col sm:flex-row gap-6 justify-center items-center"
-                initial={{ y: 50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 1, delay: 1.2 }}
-              >
-                <Link href="/objectifs">
-                  <motion.button
-                    className="px-12 py-6 bg-gradient-to-r from-red-600 to-red-700 text-white font-black text-xl font-arnold uppercase tracking-wider rounded-2xl border-2 border-red-500/50 relative overflow-hidden group"
-                    whileHover={{ 
-                      scale: 1.05, 
-                      y: -8,
-                      boxShadow: '0 20px 40px rgba(220,38,38,0.8), 0 0 30px rgba(255,0,64,0.8)'
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    animate={{
-                      boxShadow: [
-                        '0 15px 35px rgba(220,38,38,0.6)',
-                        '0 15px 35px rgba(220,38,38,0.8)',
-                        '0 15px 35px rgba(220,38,38,0.6)'
-                      ]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <Flame className="inline mr-3" size={24} />
-                    START DOMINATING
-                    
-                    {/* ELECTRIC SWEEP */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                      initial={{ x: '-100%' }}
-                      whileHover={{ x: '100%' }}
-                      transition={{ duration: 0.6 }}
-                    />
-                  </motion.button>
-                </Link>
-                
-                <Link href="/motivation">
-                  <motion.button
-                    className="px-12 py-6 bg-gradient-to-r from-gray-800 to-gray-900 text-red-400 font-black text-xl font-arnold uppercase tracking-wider rounded-2xl border-2 border-red-600/50 relative overflow-hidden group"
-                    whileHover={{ 
-                      scale: 1.05, 
-                      y: -8,
-                      backgroundColor: 'rgba(220, 38, 38, 0.2)',
-                      color: '#ff0040',
-                      boxShadow: '0 20px 40px rgba(220,38,38,0.6)'
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Skull className="inline mr-3" size={24} />
-                    FUEL THE BEAST
-                    
-                    {/* PULSE EFFECT */}
-                    <motion.div
-                      className="absolute inset-0 border-2 border-red-500/50 rounded-2xl"
-                      animate={{
-                        scale: [1, 1.05, 1],
-                        opacity: [0.5, 0, 0.5]
-                      }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    />
-                  </motion.button>
-                </Link>
-              </motion.div>
-            </div>
-
-            {/* BOTTOM ELECTRIC LINE */}
-            <motion.div 
-              className="absolute bottom-0 left-0 right-0 h-1"
-              animate={{
-                background: [
-                  'linear-gradient(90deg, transparent, #ff0040, transparent)',
-                  'linear-gradient(90deg, transparent, #ff4000, transparent)',
-                  'linear-gradient(90deg, transparent, #ff0040, transparent)'
-                ]
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </motion.section>
-
-          {/* MENU GRID - ELECTRIC CARDS */}
-          <section className="px-4 max-w-7xl mx-auto">
-            <motion.div
-              className="text-center mb-12"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 1.5 }}
+              className="mb-8"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ duration: 1, ease: "easeOut" }}
             >
-              <motion.h2 
-                className="text-4xl md:text-6xl font-black font-arnold text-red-500 mb-4 uppercase tracking-wider"
+              <motion.div
+                className="text-9xl mb-4 inline-block cursor-pointer"
                 animate={{
                   textShadow: [
-                    '0 0 20px rgba(255,0,64,0.8)',
-                    '0 0 40px rgba(255,0,64,1)',
-                    '0 0 20px rgba(255,0,64,0.8)'
+                    '0 0 20px rgba(255,0,64,0.8), 0 0 40px rgba(255,0,64,0.6)',
+                    '0 0 40px rgba(255,0,64,1), 0 0 80px rgba(255,0,64,0.8), 0 0 120px rgba(255,0,64,0.6)',
+                    '0 0 20px rgba(255,0,64,0.8), 0 0 40px rgba(255,0,64,0.6)'
+                  ],
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, -5, 0]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+                whileHover={{ 
+                  scale: 1.3, 
+                  rotate: 360,
+                  transition: { duration: 0.5 }
+                }}
+              >
+                💀
+              </motion.div>
+            </motion.div>
+
+            {/* MAIN TITLE - PURE ELECTRIC */}
+            <motion.h1
+              className="text-6xl md:text-8xl lg:text-9xl font-black font-arnold mb-6 leading-none cursor-pointer"
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              whileHover={{ 
+                scale: 1.05,
+                textShadow: '0 0 50px rgba(255,0,64,1)'
+              }}
+            >
+              <motion.span
+                animate={{
+                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                  textShadow: [
+                    '0 0 30px rgba(255,0,64,0.8)',
+                    '0 0 60px rgba(255,0,64,1), 0 0 90px rgba(255,0,64,0.8)',
+                    '0 0 30px rgba(255,0,64,0.8)'
                   ]
                 }}
                 transition={{ duration: 3, repeat: Infinity }}
+                style={{
+                  background: 'linear-gradient(45deg, #ff0040, #ff4000, #ffff00, #ff4000, #ff0040)',
+                  backgroundSize: '400% 400%',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}
               >
-                CHOOSE YOUR WEAPON
-              </motion.h2>
-              <p className="text-xl text-gray-400 font-bold uppercase tracking-wide">
-                EVERY CHAMPION NEEDS A PLAN
-              </p>
+                POWER
+              </motion.span>
+              <br />
+              <motion.span
+                animate={{
+                  backgroundPosition: ['100% 50%', '0% 50%', '100% 50%'],
+                  textShadow: [
+                    '0 0 40px rgba(255,0,64,1)',
+                    '0 0 80px rgba(255,0,64,1), 0 0 120px rgba(255,0,64,0.8)',
+                    '0 0 40px rgba(255,0,64,1)'
+                  ]
+                }}
+                transition={{ duration: 3, repeat: Infinity, delay: 1.5 }}
+                style={{
+                  background: 'linear-gradient(45deg, #dc2626, #ff0040, #ff4000, #ff0040, #dc2626)',
+                  backgroundSize: '400% 400%',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}
+              >
+                PREP
+              </motion.span>
+            </motion.h1>
+
+            {/* SUBTITLE - ELECTRIC PULSE */}
+            <motion.div
+              className="mb-8"
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 1, delay: 0.6 }}
+            >
+              <motion.p
+                className="text-xl md:text-3xl font-bold text-gray-300 mb-4 font-arnold uppercase tracking-widest"
+                animate={{
+                  textShadow: [
+                    '0 0 10px rgba(255,0,64,0.6)',
+                    '0 0 20px rgba(255,0,64,0.8)',
+                    '0 0 10px rgba(255,0,64,0.6)'
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                BEAST MODE ACTIVATED
+              </motion.p>
+              <motion.p
+                className="text-lg md:text-xl text-red-400 font-bold uppercase tracking-wider"
+                animate={{ 
+                  opacity: [0.7, 1, 0.7],
+                  scale: [1, 1.02, 1]
+                }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                NO LIMITS • NO EXCUSES • PURE INTENSITY
+              </motion.p>
             </motion.div>
 
+            {/* ROTATING QUOTES - ELECTRIC */}
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              className="mb-12 h-20 flex items-center justify-center relative"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 1.8 }}
+              transition={{ duration: 1, delay: 0.9 }}
             >
-              {menuItems.map((item, index) => (
-                <NeonCard key={item.href} item={item} index={index} />
+              {beastQuotes.map((quote, index) => (
+                <motion.div
+                  key={index}
+                  className="absolute text-center"
+                  initial={{ opacity: 0, y: 20, scale: 0.8 }}
+                  animate={{
+                    opacity: currentQuoteIndex === index ? 1 : 0,
+                    y: currentQuoteIndex === index ? 0 : 20,
+                    scale: currentQuoteIndex === index ? 1 : 0.8,
+                    textShadow: currentQuoteIndex === index ? [
+                      '0 0 10px rgba(255,0,64,0.8)',
+                      '0 0 20px rgba(255,0,64,1)',
+                      '0 0 10px rgba(255,0,64,0.8)'
+                    ] : '0 0 0px rgba(255,0,64,0)'
+                  }}
+                  transition={{ duration: 0.8, repeat: currentQuoteIndex === index ? Infinity : 0, repeatType: 'reverse' }}
+                >
+                  <p className="text-lg md:text-xl font-bold text-red-500 font-arnold uppercase tracking-wider mb-2">
+                    "{quote.text}"
+                  </p>
+                  <p className="text-sm text-gray-400 font-bold uppercase tracking-widest">
+                    - {quote.author}
+                  </p>
+                </motion.div>
               ))}
             </motion.div>
-          </section>
 
-          {/* BOTTOM SECTION - ELECTRIC STATS */}
-          <motion.section
-            className="px-4 max-w-7xl mx-auto pb-20"
+            {/* CTA BUTTONS - ELECTRIC POWER */}
+            <motion.div
+              className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 1, delay: 1.2 }}
+            >
+              <Link href="/objectifs">
+                <motion.button
+                  className="px-12 py-6 bg-gradient-to-r from-red-600 to-red-700 text-white font-black text-xl font-arnold uppercase tracking-wider rounded-2xl border-2 border-red-500/50 relative overflow-hidden group"
+                  whileHover={{ 
+                    scale: 1.05, 
+                    y: -8,
+                    boxShadow: '0 20px 40px rgba(220,38,38,0.8), 0 0 30px rgba(255,0,64,0.8)'
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={{
+                    boxShadow: [
+                      '0 15px 35px rgba(220,38,38,0.6)',
+                      '0 15px 35px rgba(220,38,38,0.8)',
+                      '0 15px 35px rgba(220,38,38,0.6)'
+                    ]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Flame className="inline mr-3" size={24} />
+                  START DOMINATING
+                  
+                  {/* ELECTRIC SWEEP */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    initial={{ x: '-100%' }}
+                    whileHover={{ x: '100%' }}
+                    transition={{ duration: 0.6 }}
+                  />
+                </motion.button>
+              </Link>
+              
+              <Link href="/motivation">
+                <motion.button
+                  className="px-12 py-6 bg-gradient-to-r from-gray-800 to-gray-900 text-red-400 font-black text-xl font-arnold uppercase tracking-wider rounded-2xl border-2 border-red-600/50 relative overflow-hidden group"
+                  whileHover={{ 
+                    scale: 1.05, 
+                    y: -8,
+                    backgroundColor: 'rgba(220, 38, 38, 0.2)',
+                    color: '#ff0040',
+                    boxShadow: '0 20px 40px rgba(220,38,38,0.6)'
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Skull className="inline mr-3" size={24} />
+                  FUEL THE BEAST
+                  
+                  {/* PULSE EFFECT */}
+                  <motion.div
+                    className="absolute inset-0 border-2 border-red-500/50 rounded-2xl"
+                    animate={{
+                      scale: [1, 1.05, 1],
+                      opacity: [0.5, 0, 0.5]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </motion.button>
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* BOTTOM ELECTRIC LINE */}
+          <motion.div 
+            className="absolute bottom-0 left-0 right-0 h-1"
+            animate={{
+              background: [
+                'linear-gradient(90deg, transparent, #ff0040, transparent)',
+                'linear-gradient(90deg, transparent, #ff4000, transparent)',
+                'linear-gradient(90deg, transparent, #ff0040, transparent)'
+              ]
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </motion.section>
+
+        {/* MENU GRID - ELECTRIC CARDS */}
+        <section className="px-4 max-w-7xl mx-auto">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 1.5 }}
+          >
+            <motion.h2 
+              className="text-4xl md:text-6xl font-black font-arnold text-red-500 mb-4 uppercase tracking-wider"
+              animate={{
+                textShadow: [
+                  '0 0 20px rgba(255,0,64,0.8)',
+                  '0 0 40px rgba(255,0,64,1)',
+                  '0 0 20px rgba(255,0,64,0.8)'
+                ]
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              CHOOSE YOUR WEAPON
+            </motion.h2>
+            <p className="text-xl text-gray-400 font-bold uppercase tracking-wide">
+              EVERY CHAMPION NEEDS A PLAN
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 2.5 }}
+            transition={{ duration: 1, delay: 1.8 }}
           >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                { icon: Trophy, value: "∞", label: "RECORDS TO BREAK", color: "text-yellow-500" },
-                { icon: Timer, value: "24/7", label: "BEAST MODE ACTIVE", color: "text-red-500" },
-                { icon: Flame, value: "100%", label: "PURE INTENSITY", color: "text-orange-500" }
-              ].map((stat, index) => {
-                const Icon = stat.icon;
-                return (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 2.5 + index * 0.2 }}
-                  >
-                    <Card className="text-center relative overflow-hidden group">
-                      <motion.div
-                        animate={{
-                          scale: [1, 1.1, 1],
-                          rotate: [0, 360, 0]
-                        }}
-                        transition={{ duration: 4, repeat: Infinity, delay: index * 0.5 }}
-                      >
-                        <Icon className={`w-16 h-16 ${stat.color} mx-auto mb-4`} />
-                      </motion.div>
-                      
-                      <motion.h3 
-                        className={`text-3xl font-black font-arnold ${stat.color} mb-2`}
-                        animate={{
-                          textShadow: [
-                            `0 0 10px ${stat.color === 'text-red-500' ? '#ff0040' : stat.color === 'text-yellow-500' ? '#ffd700' : '#ff4000'}`,
-                            `0 0 20px ${stat.color === 'text-red-500' ? '#ff0040' : stat.color === 'text-yellow-500' ? '#ffd700' : '#ff4000'}`,
-                            `0 0 10px ${stat.color === 'text-red-500' ? '#ff0040' : stat.color === 'text-yellow-500' ? '#ffd700' : '#ff4000'}`
-                          ]
-                        }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
-                        {stat.value}
-                      </motion.h3>
-                      
-                      <p className="text-gray-400 font-bold uppercase tracking-wide">
-                        {stat.label}
-                      </p>
+            {menuItems.map((item, index) => (
+              <NeonCard key={item.href} item={item} index={index} />
+            ))}
+          </motion.div>
+        </section>
 
-                      {/* ELECTRIC CORNER ACCENTS */}
-                      <motion.div
-                        className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-red-500/50"
-                        animate={{ opacity: [0.5, 1, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity, delay: index * 0.3 }}
-                      />
-                      <motion.div
-                        className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-red-500/50"
-                        animate={{ opacity: [0.5, 1, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity, delay: index * 0.3 + 1 }}
-                      />
-                    </Card>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </motion.section>
-        </div>
+        {/* BOTTOM SECTION - ELECTRIC STATS */}
+        <motion.section
+          className="px-4 max-w-7xl mx-auto pb-20"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 2.5 }}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { icon: Trophy, value: "∞", label: "RECORDS TO BREAK", color: "text-yellow-500" },
+              { icon: Timer, value: "24/7", label: "BEAST MODE ACTIVE", color: "text-red-500" },
+              { icon: Flame, value: "100%", label: "PURE INTENSITY", color: "text-orange-500" }
+            ].map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 2.5 + index * 0.2 }}
+                >
+                  <Card className="text-center relative overflow-hidden group">
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        rotate: [0, 360, 0]
+                      }}
+                      transition={{ duration: 4, repeat: Infinity, delay: index * 0.5 }}
+                    >
+                      <Icon className={`w-16 h-16 ${stat.color} mx-auto mb-4`} />
+                    </motion.div>
+                    
+                    <motion.h3 
+                      className={`text-3xl font-black font-arnold ${stat.color} mb-2`}
+                      animate={{
+                        textShadow: [
+                          `0 0 10px ${stat.color === 'text-red-500' ? '#ff0040' : stat.color === 'text-yellow-500' ? '#ffd700' : '#ff4000'}`,
+                          `0 0 20px ${stat.color === 'text-red-500' ? '#ff0040' : stat.color === 'text-yellow-500' ? '#ffd700' : '#ff4000'}`,
+                          `0 0 10px ${stat.color === 'text-red-500' ? '#ff0040' : stat.color === 'text-yellow-500' ? '#ffd700' : '#ff4000'}`
+                        ]
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      {stat.value}
+                    </motion.h3>
+                    
+                    <p className="text-gray-400 font-bold uppercase tracking-wide">
+                      {stat.label}
+                    </p>
+
+                    {/* ELECTRIC CORNER ACCENTS */}
+                    <motion.div
+                      className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-red-500/50"
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: index * 0.3 }}
+                    />
+                    <motion.div
+                      className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-red-500/50"
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: index * 0.3 + 1 }}
+                    />
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.section>
       </div>
-    </AuthGuard>
+    </div>
   );
 }

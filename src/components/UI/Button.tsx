@@ -190,6 +190,7 @@ export const Button: React.FC<ButtonProps> = ({
 };
 
 // FLOATING ACTION BUTTON - PURE BEAST MODE
+// FLOATING ACTION BUTTON - PURE BEAST MODE - ✅ CORRIGÉ
 export const BeastFAB: React.FC<{
   onClick: () => void;
   icon: React.ReactNode;
@@ -199,7 +200,7 @@ export const BeastFAB: React.FC<{
     <motion.button
       onClick={onClick}
       className={`
-        fixed bottom-6 right-6 z-50
+        fixed bottom-6 right-6 z-[60]
         w-16 h-16 rounded-full
         bg-gradient-to-r from-red-600 to-red-700
         border-2 border-red-500/50
@@ -231,6 +232,7 @@ export const BeastFAB: React.FC<{
         y: { duration: 0.3 },
         rotate: { duration: 0.3 }
       }}
+      style={{ pointerEvents: 'auto' }} // ✅ FIX CRITIQUE - Force les interactions
     >
       <motion.div
         whileHover={{ scale: 1.2 }}
@@ -241,7 +243,7 @@ export const BeastFAB: React.FC<{
       
       {/* RED NEON RING */}
       <motion.div
-        className="absolute inset-0 rounded-full border-2 border-red-400/50"
+        className="absolute inset-0 rounded-full border-2 border-red-400/50 pointer-events-none"
         animate={{
           scale: [1, 1.2, 1],
           opacity: [0.5, 0, 0.5]

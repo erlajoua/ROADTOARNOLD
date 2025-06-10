@@ -148,7 +148,7 @@ export default function CompetitionPrepPage() {
     <AuthGuard>
       <div className="min-h-screen relative overflow-hidden">
         {/* ELECTRIC BACKGROUND */}
-        <div className="fixed inset-0 opacity-5">
+        <div className="fixed inset-0 opacity-5 pointer-events-none">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,64,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,0,64,0.1)_1px,transparent_1px)] bg-[size:40px_40px]" />
         </div>
 
@@ -160,10 +160,10 @@ export default function CompetitionPrepPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            {/* BACKGROUND EFFECTS */}
-            <div className="absolute inset-0">
+            {/* BACKGROUND EFFECTS - ✅ CORRIGÉ */}
+            <div className="absolute inset-0 pointer-events-none">
               <motion.div
-                className="absolute top-0 right-1/4 w-96 h-96 bg-red-600/30 rounded-full blur-3xl"
+                className="absolute top-0 right-1/4 w-96 h-96 bg-red-600/30 rounded-full blur-3xl pointer-events-none"
                 animate={{
                   scale: [1, 1.5, 1],
                   opacity: [0.3, 0.8, 0.3]
@@ -171,7 +171,7 @@ export default function CompetitionPrepPage() {
                 transition={{ duration: 3, repeat: Infinity }}
               />
               <motion.div
-                className="absolute bottom-0 left-1/4 w-96 h-96 bg-orange-600/20 rounded-full blur-3xl"
+                className="absolute bottom-0 left-1/4 w-96 h-96 bg-orange-600/20 rounded-full blur-3xl pointer-events-none"
                 animate={{
                   scale: [1.5, 1, 1.5],
                   opacity: [0.5, 0.2, 0.5]
@@ -271,7 +271,7 @@ export default function CompetitionPrepPage() {
                   onClick={() => setShowForm(true)}
                   size="xl"
                   icon={<Skull size={24} />}
-                  className="shadow-beast-ultimate"
+                  className="shadow-beast-ultimate flex items-center justify-center"
                 >
                   AJOUTER UNE MISSION
                 </Button>
@@ -350,7 +350,7 @@ export default function CompetitionPrepPage() {
             </motion.section>
           )}
 
-          {/* FORM MODAL - BEAST WAR MODE */}
+          {/* FORM MODAL - BEAST WAR MODE - ✅ CORRIGÉ */}
           <AnimatePresence>
             {showForm && (
               <motion.div
@@ -358,23 +358,26 @@ export default function CompetitionPrepPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
+                style={{ pointerEvents: showForm ? 'auto' : 'none' }}
               >
-                {/* BACKDROP */}
+                {/* BACKDROP - ✅ CORRIGÉ */}
                 <motion.div
                   className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => setShowForm(false)}
+                  style={{ pointerEvents: 'auto' }}
                 />
 
-                {/* FORM */}
+                {/* FORM - ✅ CORRIGÉ */}
                 <motion.div
                   className="relative w-full max-w-md"
                   initial={{ scale: 0.9, y: 50 }}
                   animate={{ scale: 1, y: 0 }}
                   exit={{ scale: 0.9, y: 50 }}
                   transition={{ duration: 0.3 }}
+                  style={{ pointerEvents: 'auto' }}
                 >
                   <Card title="⚔️ NOUVELLE MISSION DE GUERRE">
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -528,7 +531,7 @@ export default function CompetitionPrepPage() {
                       {/* COMPLETION GLOW */}
                       {task.completed && (
                         <motion.div
-                          className="absolute inset-0 rounded-xl border-2 border-green-500/50"
+                          className="absolute inset-0 rounded-xl border-2 border-green-500/50 pointer-events-none"
                           animate={{
                             boxShadow: [
                               '0 0 0 0 rgba(34, 197, 94, 0.4)',
@@ -542,7 +545,7 @@ export default function CompetitionPrepPage() {
                       {/* HIGH PRIORITY GLOW */}
                       {task.priority === 'high' && !task.completed && (
                         <motion.div
-                          className="absolute inset-0 rounded-xl border border-red-500/50"
+                          className="absolute inset-0 rounded-xl border border-red-500/50 pointer-events-none"
                           animate={{
                             boxShadow: [
                               '0 0 0 0 rgba(239, 68, 68, 0.6)',
@@ -661,11 +664,12 @@ export default function CompetitionPrepPage() {
           </motion.section>
         </div>
 
-        {/* FLOATING ACTION BUTTON */}
+        {/* FLOATING ACTION BUTTON - ✅ Z-INDEX CORRIGÉ */}
         {!showForm && totalTasks > 0 && (
           <BeastFAB
             onClick={() => setShowForm(true)}
             icon={<Plus size={24} />}
+            className="z-[60]"
           />
         )}
       </div>

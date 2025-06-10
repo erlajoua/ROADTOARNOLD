@@ -109,13 +109,13 @@ export default function MotivationPage() {
 
 	const getPlaceholder = (type: MotivationEntry["type"]) => {
 		switch(type) {
-			case "why": return "Pourquoi tu fais du powerlifting... Quelle est ta raison profonde ?";
-			case "quote": return "Une citation qui enflamme ton âme de guerrier...";
-			case "mantra": return "Un mantra de guerre pour l'entraînement...";
-			case "goal": return "Un objectif qui te consume de l'intérieur...";
-			case "reminder": return "Un rappel pour rester dans le game...";
-			case "affirmation": return "Une affirmation de ta puissance...";
-			default: return "Écris ce qui nourrit ta bête intérieure...";
+			case "why": return "PENSE A RONALD";
+			case "quote": return "NIGOUL EST EN TOI";
+			case "mantra": return "LA DOULEUR C'EST UNE INFORMATION";
+			case "goal": return "CHAMPION DE FRANCE OU RIEN";
+			case "reminder": return "TES BRAS DE SKINNY EN 2016";
+			case "affirmation": return "LA Psyché C TRES SERIEUX VIENS PAS ME DIRE QUAVOIR 2 PERES C STABLE";
+			default: return "Écris ce qui nourrit ta bête intérieure sous anavare";
 		}
 	};
 
@@ -123,17 +123,17 @@ export default function MotivationPage() {
 	const beastQuotes = [
 		{
 			title: "ARNOLD'S WISDOM",
-			content: "I'LL BE BACK... STRONGER THAN BEFORE",
+			content: "PUMP IS BETTER THAN SEX",
 			type: "quote" as const
 		},
 		{
-			title: "MENTZER'S INTENSITY",
-			content: "THE WORST THING I CAN BE IS THE SAME AS EVERYBODY ELSE",
+			title: "FRANCK ROPERS",
+			content: "LA VISUALISATION C'EST 95% DE LA PERF",
 			type: "quote" as const
 		},
 		{
-			title: "BEAST MANTRA",
-			content: "NO PAIN, NO GAIN. NO LIMITS, NO EXCUSES.",
+			title: "BRUNO NIGOUL",
+			content: "LA DOULEUR C'EST UNE INFORMATION",
 			type: "mantra" as const
 		}
 	];
@@ -155,8 +155,8 @@ export default function MotivationPage() {
 	return (
 		<AuthGuard>
 			<div className="min-h-screen relative overflow-hidden">
-				{/* ELECTRIC BACKGROUND */}
-				<div className="fixed inset-0 opacity-5">
+				{/* ELECTRIC BACKGROUND - ✅ CORRIGÉ */}
+				<div className="fixed inset-0 opacity-5 pointer-events-none">
 					<div className="absolute inset-0 bg-[linear-gradient(rgba(255,0,64,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,0,64,0.1)_1px,transparent_1px)] bg-[size:40px_40px]" />
 				</div>
 
@@ -168,10 +168,10 @@ export default function MotivationPage() {
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.8 }}
 					>
-						{/* BACKGROUND EFFECTS */}
-						<div className="absolute inset-0">
+						{/* BACKGROUND EFFECTS - ✅ CORRIGÉ */}
+						<div className="absolute inset-0 pointer-events-none">
 							<motion.div
-								className="absolute top-0 left-1/3 w-64 h-64 bg-red-600/20 rounded-full blur-3xl"
+								className="absolute top-0 left-1/3 w-64 h-64 bg-red-600/20 rounded-full blur-3xl pointer-events-none"
 								animate={{
 									scale: [1, 1.3, 1],
 									opacity: [0.3, 0.7, 0.3]
@@ -230,6 +230,7 @@ export default function MotivationPage() {
 								initial={{ y: 30, opacity: 0 }}
 								animate={{ y: 0, opacity: 1 }}
 								transition={{ duration: 1, delay: 0.9 }}
+								className="flex justify-center items-center"
 							>
 								<Button
 									onClick={() => setShowForm(true)}
@@ -278,7 +279,7 @@ export default function MotivationPage() {
 							animate={{ opacity: 1, scale: 1 }}
 							transition={{ duration: 0.8, delay: 1.5 }}
 						>
-							<Card className="text-center py-16">
+							<Card className="text-center py-16 flex items-center justify-center">
 								<motion.div
 									className="text-8xl mb-8"
 									animate={{ rotate: [0, 10, -10, 0] }}
@@ -294,7 +295,7 @@ export default function MotivationPage() {
 								</p>
 
 								{/* QUICK ADD BEAST QUOTES */}
-								<div className="space-y-4 mb-8">
+								<div className="space-y-4 mb-8 w-full">
 									<p className="text-gray-400 font-bold uppercase tracking-wide text-sm">
 										OU COMMENCE AVEC UNE CITATION BEAST :
 									</p>
@@ -310,7 +311,7 @@ export default function MotivationPage() {
 														console.error("❌ FAILED TO ADD BEAST QUOTE:", error);
 													}
 												}}
-												className="p-4 bg-gradient-to-r from-red-600/20 to-red-700/30 border border-red-500/50 rounded-lg text-left hover:scale-105 transition-all duration-300"
+												className={`p-4 bg-gradient-to-r ${getTypeColor(quote.type)} rounded-lg text-left hover:scale-105 transition-all duration-300`}
 												whileHover={{ y: -2 }}
 												whileTap={{ scale: 0.95 }}
 											>
@@ -327,6 +328,7 @@ export default function MotivationPage() {
 
 								<Button
 									onClick={() => setShowForm(true)}
+									className="w-full"
 									size="xl"
 									icon={<Flame size={24} />}
 								>
@@ -336,7 +338,7 @@ export default function MotivationPage() {
 						</motion.section>
 					)}
 
-					{/* FORM MODAL - BEAST MODE */}
+					{/* FORM MODAL - BEAST MODE - ✅ CORRIGÉ */}
 					<AnimatePresence>
 						{showForm && (
 							<motion.div
@@ -344,23 +346,26 @@ export default function MotivationPage() {
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
 								exit={{ opacity: 0 }}
+								style={{ pointerEvents: showForm ? 'auto' : 'none' }}
 							>
-								{/* BACKDROP */}
+								{/* BACKDROP - ✅ CORRIGÉ */}
 								<motion.div
 									className="absolute inset-0 bg-black/80 backdrop-blur-sm"
 									initial={{ opacity: 0 }}
 									animate={{ opacity: 1 }}
 									exit={{ opacity: 0 }}
 									onClick={() => setShowForm(false)}
+									style={{ pointerEvents: 'auto' }}
 								/>
 
-								{/* FORM */}
+								{/* FORM - ✅ CORRIGÉ */}
 								<motion.div
 									className="relative w-full max-w-md"
 									initial={{ scale: 0.9, y: 50 }}
 									animate={{ scale: 1, y: 0 }}
 									exit={{ scale: 0.9, y: 50 }}
 									transition={{ duration: 0.3 }}
+									style={{ pointerEvents: 'auto' }}
 								>
 									<Card title="🔥 NOUVEAU CARBURANT">
 										<form onSubmit={handleSubmit} className="space-y-6">
@@ -510,7 +515,7 @@ export default function MotivationPage() {
 
 														{/* GLOW EFFECT */}
 														<motion.div
-															className="absolute inset-0 rounded-xl border border-red-500/30"
+															className="absolute inset-0 rounded-xl border border-red-500/30 pointer-events-none"
 															animate={{
 																boxShadow: [
 																	'0 0 0 0 rgba(239, 68, 68, 0.4)',
@@ -530,11 +535,12 @@ export default function MotivationPage() {
 					)}
 				</div>
 
-				{/* FLOATING ACTION BUTTON */}
+				{/* FLOATING ACTION BUTTON - ✅ Z-INDEX CORRIGÉ */}
 				{!showForm && totalEntries > 0 && (
 					<BeastFAB
 						onClick={() => setShowForm(true)}
 						icon={<Plus size={24} />}
+						className="z-[60]"
 					/>
 				)}
 			</div>
