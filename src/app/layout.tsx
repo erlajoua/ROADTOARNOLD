@@ -1,9 +1,7 @@
 'use client';
-import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BeastAudio } from '@/components/Audio/BeastAudio';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -57,12 +55,10 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
   const startBeastInitialization = () => {
     setShowInitialMessage(false);
     
-    // Start image sequence
     const startImagesTimer = setTimeout(() => {
       setShowImages(true);
     }, 1000);
 
-    // Progress simulation
     const progressInterval = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
@@ -75,7 +71,6 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
       });
     }, 300);
 
-    // Image rotation
     const imageInterval = setInterval(() => {
       setCurrentImageIndex(prev => (prev + 1) % beastImages.length);
     }, 1200);
@@ -87,12 +82,10 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
     };
   };
 
-  // Auto start DIRECT
   useEffect(() => {
     const timer = setTimeout(() => {
       startBeastInitialization();
     }, 1000);
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -122,7 +115,6 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
           }}
         />
 
-        {/* Electric bolts */}
         {[15, 30, 45, 60, 75, 90].map((left, i) => (
           <motion.div
             key={`bolt-${i}`}
@@ -144,7 +136,6 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
           />
         ))}
 
-        {/* Glowing orbs */}
         {[
           { left: '20%', top: '20%' },
           { left: '50%', top: '30%' },
@@ -171,7 +162,6 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
       </div>
 
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-8">
-        {/* INITIAL BEAST MESSAGE */}
         <AnimatePresence>
           {showInitialMessage && (
             <motion.div
@@ -216,7 +206,6 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
           )}
         </AnimatePresence>
 
-        {/* MAIN LOADING CONTENT */}
         <AnimatePresence>
           {!showInitialMessage && (
             <motion.div
@@ -225,7 +214,6 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
             >
-              {/* MAIN LOGO */}
               <motion.div
                 className="mb-12"
                 initial={{ scale: 0, rotate: -180 }}
@@ -272,7 +260,6 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
                 </motion.p>
               </motion.div>
 
-              {/* LEGEND IMAGES */}
               <AnimatePresence mode="wait">
                 {showImages && (
                   <motion.div
@@ -326,7 +313,6 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
                 )}
               </AnimatePresence>
 
-              {/* LOADING BAR */}
               <div className="w-full max-w-md mb-8 mx-auto">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-red-400 font-bold uppercase tracking-wider">
@@ -359,7 +345,6 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
                 </div>
               </div>
 
-              {/* LOADING MESSAGES */}
               <motion.div
                 className="text-center"
                 animate={{ opacity: [0.7, 1, 0.7] }}
@@ -379,7 +364,6 @@ const BeastLoadingScreen = ({ onComplete }: { onComplete: () => void }) => {
                 </div>
               </motion.div>
 
-              {/* COMPLETION EXPLOSION */}
               {loadingComplete && (
                 <motion.div
                   className="absolute inset-0 pointer-events-none"
@@ -423,6 +407,32 @@ export default function RootLayout({
 }) {
   const [showLoading, setShowLoading] = useState(true);
 
+  // MUSIQUE ULTRA SIMPLE - DÈS LE PREMIER RENDU
+  useEffect(() => {
+    const audio = new Audio('/phonk-beast.mp3');
+    console.log("audio = ", audio);
+    audio.volume = 0.4;
+    audio.loop = true;
+    
+    const playMusic = () => {
+      audio.play().catch(console.log);
+      document.removeEventListener('click', playMusic);
+      document.removeEventListener('keydown', playMusic);
+      document.removeEventListener('touchstart', playMusic);
+    };
+    
+    // Lance la musique au premier clic/toucher/clavier
+    document.addEventListener('click', playMusic);
+    document.addEventListener('keydown', playMusic);
+    document.addEventListener('touchstart', playMusic);
+    
+    return () => {
+      document.removeEventListener('click', playMusic);
+      document.removeEventListener('keydown', playMusic);
+      document.removeEventListener('touchstart', playMusic);
+    };
+  }, []);
+
   return (
     <html lang="fr" className="dark">
       <head>
@@ -432,9 +442,6 @@ export default function RootLayout({
       </head>
       
       <body className={`${inter.className} antialiased`}>
-        {/* BEAST AUDIO - TOUJOURS ACTIF */}
-        <BeastAudio autoPlay={true} loop={true} volume={0.4} />
-        
         <AnimatePresence>
           {showLoading && (
             <BeastLoadingScreen onComplete={() => setShowLoading(false)} />
